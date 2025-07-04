@@ -209,6 +209,35 @@ try {
                             <option value="Toutes Saisons">Toutes Saisons</option>
                         </select>
                     </div>
+                    <!-- Champs supplémentaires -->
+                    <div class="filter-group">
+                        <label for="charge">Charge</label>
+                        <select name="charge" id="charge">
+                            <option value="">Toutes</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="vitesse">Vitesse</label>
+                        <select name="vitesse" id="vitesse">
+                            <option value="">Toutes</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="marque">Marque</label>
+                        <select name="marque" id="marque">
+                            <option value="">Toutes</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="specificite">Spécificité</label>
+                        <select name="specificite" id="specificite">
+                            <option value="">Spécificité</option>
+                        </select>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label><input type="checkbox" name="runflat"> Runflat</label>
+                        <label><input type="checkbox" name="renforce"> Renforcé</label>
+                    </div>
                 </div>
                 <button type="submit" class="cta-button qf-submit-button">Rechercher Pneus</button>
             </form>
