@@ -507,7 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
             addressModalOverlay.style.display = 'flex';
             setTimeout(() => {
                 addressModalOverlay.classList.add('is-visible');
-                document.body.style.overflow = 'hidden';
+                // document.body.style.overflow = 'hidden'; // TEST: Temporarily comment out
             }, 10);
         }
 
@@ -518,7 +518,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!addressModalOverlay.classList.contains('is-visible')) {
                     addressModalOverlay.style.display = 'none';
                 }
-                 document.body.style.overflow = '';
+                 document.body.style.overflow = ''; // Ensure this is still reset
             }, 300); // Match transition duration (approx)
         }
 
@@ -1132,7 +1132,7 @@ document.addEventListener('DOMContentLoaded', () => {
             orderDetailModalOverlay.style.display = 'flex';
             setTimeout(() => {
                 orderDetailModalOverlay.classList.add('is-visible');
-                document.body.style.overflow = 'hidden';
+                // document.body.style.overflow = 'hidden'; // TEST: Temporarily comment out
             }, 10);
         }
 
@@ -1142,7 +1142,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!orderDetailModalOverlay.classList.contains('is-visible')) {
                     orderDetailModalOverlay.style.display = 'none';
                 }
-                document.body.style.overflow = '';
+                document.body.style.overflow = ''; // Ensure this is still reset
             }, 300);
         }
 
