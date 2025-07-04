@@ -387,31 +387,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Pre-fill filters from URL parameters on produits.php
-        if (window.location.pathname.endsWith('produits.php') && allProductsData.length > 0) {
-            const urlParams = new URLSearchParams(window.location.search);
-            let filtersAppliedFromUrl = false;
+        // This block is now handled by prefillFiltersFromURL() inside initializeProductPageFilters().
+        // if (window.location.pathname.endsWith('produits.php') && allProductsDomData.length > 0) { // Corrected to allProductsDomData but logic moved
+        //     const urlParams = new URLSearchParams(window.location.search);
+        //     let filtersAppliedFromUrl = false;
 
-            if (urlParams.has('width') && filterWidthSelect) {
-                filterWidthSelect.value = urlParams.get('width');
-                filtersAppliedFromUrl = true;
-            }
-            if (urlParams.has('ratio') && filterRatioSelect) {
-                filterRatioSelect.value = urlParams.get('ratio');
-                filtersAppliedFromUrl = true;
-            }
-            if (urlParams.has('diameter') && filterDiameterSelect) {
-                filterDiameterSelect.value = urlParams.get('diameter');
-                filtersAppliedFromUrl = true;
-            }
-            if (urlParams.has('type') && filterTypeSelect) {
-                filterTypeSelect.value = urlParams.get('type');
-                filtersAppliedFromUrl = true;
-            }
+        //     if (urlParams.has('width') && filterWidthSelect) {
+        //         filterWidthSelect.value = urlParams.get('width');
+        //         filtersAppliedFromUrl = true;
+        //     }
+        //     if (urlParams.has('ratio') && filterRatioSelect) {
+        //         filterRatioSelect.value = urlParams.get('ratio');
+        //         filtersAppliedFromUrl = true;
+        //     }
+        //     if (urlParams.has('diameter') && filterDiameterSelect) {
+        //         filterDiameterSelect.value = urlParams.get('diameter');
+        //         filtersAppliedFromUrl = true;
+        //     }
+        //     if (urlParams.has('type') && filterTypeSelect) {
+        //         filterTypeSelect.value = urlParams.get('type');
+        //         filtersAppliedFromUrl = true;
+        //     }
 
-            if (filtersAppliedFromUrl) {
-                applyFilters();
-            }
-        }
+        //     if (filtersAppliedFromUrl) {
+        //         applyFilters(); // This also needs allProductsDomData to be ready
+        //     }
+        // }
 
         // === Product Sorting Logic (produits.html) ===
         const sortBySelect = document.getElementById('sort-by');

@@ -5331,6 +5331,8 @@ select:disabled {
 }
 
 /* General iOS input font size fix - ensure font size is at least 16px to prevent zoom */
+/* Commenting out the global !important rule as it might be too aggressive and cause issues with select interaction */
+/*
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -5339,13 +5341,30 @@ input[type="number"],
 input[type="tel"],
 textarea,
 select {
-    font-size: 16px !important; /* Using !important cautiously here for iOS zoom fix */
+    font-size: 16px !important;
 }
+*/
 
-/* Specific adjustments if the above is too broad */
+/* Ensure select elements in filters have a minimum font-size of 16px on mobile to prevent iOS zoom, but without !important if possible */
 @media (max-width: 767px) {
     .quick-filter-form .filter-group select,
+    .filters-panel-body #product-filters-form select,
+    .auth-form input, /* Auth form inputs */
+    .contact-form input, .contact-form textarea, /* Contact form inputs */
+    .newsletter-form input[type="email"], /* Newsletter input */
+    .product-detail-info-column .quantity-selector input[type="number"], /* Product page quantity */
+    .cart-item-quantity input[type="number"], /* Cart quantity */
+    .product-search-form input[type="search"], /* Product search on product list */
+    .sort-options select /* Sort select on product list */
+     {
+        font-size: 16px; /* Target 16px specifically. If still issues, !important might be needed but as last resort. */
+    }
+
+    /* If the select padding was making them too small vertically, adjust here */
+    .quick-filter-form .filter-group select,
     .filters-panel-body #product-filters-form select {
-        font-size: 16px !important; /* Override previous 1.05rem if it's less than 16px */
+        padding-top: 0.8rem; /* Ensure adequate vertical padding */
+        padding-bottom: 0.8rem;
+        min-height: 44px; /* Common minimum touch target height */
     }
 }
