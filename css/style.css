@@ -5195,3 +5195,157 @@ body.modal-open #product-modal {
     font-weight: var(--font-weight-medium);
     color: var(--text-light);
 }
+
+/* === Base Select Styling === */
+select {
+    background-color: var(--bg-surface);
+    color: var(--text-light);
+    border: 1px solid var(--border-color);
+    padding: 0.8rem 1rem; /* Standard padding */
+    border-radius: var(--border-radius-small, 5px);
+    font-size: 1rem; /* Ensure readable font size on mobile */
+    -webkit-appearance: none; /* Remove default iOS styling */
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23e0e0e0' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.8rem center;
+    background-size: 0.9em;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    width: 100%; /* Make selects take full width within their container */
+    box-sizing: border-box;
+}
+
+select:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(255, 221, 3, 0.3);
+}
+
+select:disabled {
+    background-color: var(--bg-dark);
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* === Quick Filter Form (index.php) Specific Mobile Optimizations === */
+@media (max-width: 767px) {
+    .quick-filter-form .filter-grid {
+        grid-template-columns: 1fr; /* Stack all filters in a single column */
+        gap: 1.2rem; /* Adjust gap for stacked items */
+    }
+
+    .quick-filter-form .filter-group label {
+        font-size: 0.95rem; /* Slightly larger label for touch */
+        margin-bottom: 0.6rem;
+    }
+
+    .quick-filter-form .filter-group select {
+        padding: 0.9rem 1.1rem; /* Larger padding for easier touch */
+        font-size: 1.05rem; /* Slightly larger font in select */
+    }
+
+    .quick-filter-form .form-group.checkbox-group {
+        display: flex;
+        flex-direction: column; /* Stack checkboxes */
+        gap: 0.8rem;
+        padding-top: 0.5rem;
+    }
+    .quick-filter-form .form-group.checkbox-group label {
+         font-size: 1rem; /* Larger label for checkbox text */
+         padding-left: 35px; /* Ensure custom checkbox is well spaced */
+         min-height: 24px; /* Ensure good tap height */
+    }
+    .quick-filter-form .form-group.checkbox-group label::before { /* Custom checkbox box */
+        width: 24px;
+        height: 24px;
+    }
+    .quick-filter-form .form-group.checkbox-group label::after { /* Custom checkmark */
+        left: 9px; /* Adjust checkmark position for larger box */
+        width: 7px;
+        height: 14px;
+    }
+
+
+    .quick-filter-form .qf-submit-button {
+        padding: 1rem 1.5rem; /* Larger submit button */
+        font-size: 1.1rem;
+    }
+}
+
+/* === Filters Panel (produits.php) Specific Mobile Optimizations === */
+@media (max-width: 767px) {
+    .filters-off-canvas-panel {
+        max-width: 100%; /* Full width on smaller mobile */
+        right: -100%; /* Ensure it's fully off-screen */
+    }
+    .filters-off-canvas-panel.is-active {
+        right: 0;
+    }
+
+    .filters-panel-body #product-filters-form {
+        gap: 1.2rem; /* Consistent gap for stacked items */
+    }
+
+    /* Ensure sub-groups in tire dimensions also stack nicely */
+    #product-filters-form .tire-size-inputs-row {
+        grid-template-columns: 1fr; /* Stack width/ratio/diameter */
+        gap: 1.2rem;
+    }
+
+    .filters-panel-body #product-filters-form label {
+        font-size: 0.95rem;
+    }
+
+    .filters-panel-body #product-filters-form select {
+        padding: 0.9rem 1.1rem;
+        font-size: 1.05rem;
+    }
+
+    /* Checkbox styling in product filters panel */
+    .filters-panel-body .features-filter-group .checkbox-option label {
+        font-size: 1rem;
+        padding-left: 35px;
+        min-height: 24px;
+    }
+    .filters-panel-body .features-filter-group .checkbox-option label::before {
+        width: 24px;
+        height: 24px;
+    }
+    .filters-panel-body .features-filter-group .checkbox-option label::after {
+        left: 9px;
+        width: 7px;
+        height: 14px;
+    }
+
+    #product-filters-form .filter-actions {
+        flex-direction: column; /* Stack buttons */
+        gap: 0.8rem;
+    }
+    #product-filters-form .filter-actions .cta-button {
+        width: 100%; /* Full width buttons in panel */
+        padding: 1rem;
+        font-size: 1.05rem;
+    }
+}
+
+/* General iOS input font size fix - ensure font size is at least 16px to prevent zoom */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="number"],
+input[type="tel"],
+textarea,
+select {
+    font-size: 16px !important; /* Using !important cautiously here for iOS zoom fix */
+}
+
+/* Specific adjustments if the above is too broad */
+@media (max-width: 767px) {
+    .quick-filter-form .filter-group select,
+    .filters-panel-body #product-filters-form select {
+        font-size: 16px !important; /* Override previous 1.05rem if it's less than 16px */
+    }
+}
