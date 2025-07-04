@@ -173,7 +173,7 @@ $page_title = $order_details ? "Détail Commande #" . sanitize_html_output(strto
 <body>
     <header class="admin-header">
         <div class="logo">
-             <a href="admin_dashboard.php"><img src="assets/images/ouiPneu.png" alt="Logo Ouipneu.fr"></a>
+             <a href="admin_dashboard.php"><img src="assets/images/logobg.png" alt="Logo Ouipneu.fr"></a>
         </div>
         <div class="admin-user-info">
             <span><?php echo isset($_SESSION['admin_username']) ? sanitize_html_output($_SESSION['admin_username']) : 'Admin'; ?> | <a href="admin_logout.php">Déconnexion</a></span>

@@ -95,131 +95,195 @@ document.addEventListener('DOMContentLoaded', () => {
     // Product Filtering Logic
     const productFiltersForm = document.getElementById('product-filters-form');
 
+    // Make allFilterData global to this scope so it can be shared/checked by product page filters
+    let allFilterOptionsData = null; 
+
+    async function ensureFilterDataFetched() {
+        if (!allFilterOptionsData) {
+            try {
+                const response = await fetch('get_filter_options.php');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                allFilterOptionsData = await response.json();
+                if (allFilterOptionsData.error) {
+                    console.error("Error from get_filter_options.php:", allFilterOptionsData.error);
+                    allFilterOptionsData = null; // Reset on error
+                }
+            } catch (error) {
+                console.error("Could not fetch filter options for product page:", error);
+                allFilterOptionsData = null;
+            }
+        }
+        return allFilterOptionsData;
+    }
+    
+    // Generic function to populate select, used by both quick filter and product page filters
+    function populateSelectWithOptionsGeneric(selectElement, options, placeholderValue, placeholderText, valuePrefix = '', textPrefix = '') {
+        if (!selectElement) return;
+        const currentValue = selectElement.value; // Preserve current selection if possible
+        selectElement.innerHTML = `<option value="${placeholderValue}">${placeholderText}</option>`;
+        const fragment = document.createDocumentFragment();
+        options.forEach(optValue => {
+            const option = document.createElement('option');
+            option.value = valuePrefix + optValue;
+            option.textContent = textPrefix + optValue;
+            fragment.appendChild(option);
+        });
+        selectElement.appendChild(fragment);
+        // Try to restore previous selection
+        if (Array.from(selectElement.options).some(opt => opt.value === currentValue)) {
+            selectElement.value = currentValue;
+        }
+    }
+
+
     if (productFiltersForm) {
-        let allProductsData = [];
+        let allProductsDomData = []; // Data parsed from DOM elements for client-side filtering
         const productGrid = document.querySelector('#all-products .product-grid');
 
         const filterWidthSelect = document.getElementById('filter-width');
         const filterRatioSelect = document.getElementById('filter-ratio');
         const filterDiameterSelect = document.getElementById('filter-diameter');
         const filterBrandSelect = document.getElementById('filter-brand');
-        const filterTypeSelect = document.getElementById('filter-type');
+        const filterTypeSelect = document.getElementById('filter-type'); // Saison
         const filterRunflatCheckbox = document.getElementById('filter-runflat');
         const filterReinforcedCheckbox = document.getElementById('filter-reinforced');
         const resetFiltersButton = document.getElementById('reset-filters-button');
+        const applyFiltersAndCloseButton = document.getElementById('apply-filters-button');
+
 
         function parseProductCard(cardElement) {
-            const nameElement = cardElement.querySelector('.product-name');
-            const brandElement = cardElement.querySelector('.product-brand');
-            const specsElement = cardElement.querySelector('.product-specs');
-            const priceElement = cardElement.querySelector('.product-price');
-
-            const name = nameElement ? nameElement.textContent.trim() : 'N/A';
-            const brandText = brandElement ? brandElement.textContent.trim() : '';
-            const specsText = specsElement ? specsElement.textContent.trim() : '';
-            const priceText = priceElement ? priceElement.textContent.trim() : '';
-
-            const brand = brandText ? brandText.replace('Marque:', '').trim() : '';
-
-            let width = '', ratio = '', diameter = '', type = '';
-            if (specsText) {
-                const parts = specsText.split('|');
-                const sizePart = parts[0] ? parts[0].replace('Taille:', '').trim() : '';
-                type = parts[1] ? parts[1].trim() : '';
-                const sizeMatch = sizePart.match(/(\d+)\/(\d+)R(\d+)/);
-                if (sizeMatch && sizeMatch.length === 4) {
-                    width = sizeMatch[1];
-                    ratio = sizeMatch[2];
-                    diameter = sizeMatch[3];
-                }
-            }
-            const price = priceText ? parseFloat(priceText.replace('€', '')) : 0;
-
-            const runflatAttr = cardElement.dataset.runflat;
-            const reinforcedAttr = cardElement.dataset.reinforced;
-            const runflat = runflatAttr === 'true';
-            const reinforced = reinforcedAttr === 'true';
-
+            // dataset attributes are preferred for reliable data retrieval
+            const name = cardElement.dataset.name || 'N/A';
+            const brand = cardElement.dataset.brand || '';
+            const width = cardElement.dataset.width || '';
+            const ratio = cardElement.dataset.ratio || '';
+            const diameter = cardElement.dataset.diameter || '';
+            const type = cardElement.dataset.type || ''; // Saison from data-type
+            const price = parseFloat(cardElement.dataset.price) || 0;
+            const runflat = cardElement.dataset.runflat === 'true';
+            const reinforced = cardElement.dataset.reinforced === 'true';
+            
             return { name, brand, width, ratio, diameter, type, price, runflat, reinforced, domElement: cardElement };
         }
 
-        function extractProductData() {
-            if (!productGrid) {
-                return [];
-            }
+        function extractProductDataFromDOM() {
+            if (!productGrid) return [];
             const cards = productGrid.querySelectorAll('.product-card');
             return Array.from(cards).map(card => parseProductCard(card));
         }
+        
+        async function initializeProductPageFilters() {
+            allProductsDomData = extractProductDataFromDOM();
+            const fetchedOptions = await ensureFilterDataFetched();
 
-        function populateSelectWithOptions(selectElement, values, displayPrefix = '', valuePrefix = '') {
-            if (!selectElement) return;
-            const fragment = document.createDocumentFragment();
-            const existingOptions = new Set(Array.from(selectElement.options).map(opt => opt.value));
-            if (selectElement.options.length > 0 && selectElement.options[0].value === "") {
-                 existingOptions.delete("");
+            if (fetchedOptions && !fetchedOptions.error) {
+                populateSelectWithOptionsGeneric(filterWidthSelect, fetchedOptions.largeurs, "", "Tout");
+                populateSelectWithOptionsGeneric(filterRatioSelect, [], "", "Tout"); // Init empty, depends on width
+                populateSelectWithOptionsGeneric(filterDiameterSelect, [], "", "Tout", "", "R"); // Init empty, depends on width/ratio
+                populateSelectWithOptionsGeneric(filterBrandSelect, fetchedOptions.marques, "", "Toutes");
+                // Type (Saison) is usually static, so no need to populate from fetchedOptions unless it's dynamic
+                // filterTypeSelect is already populated with static options in HTML
+
+                filterRatioSelect.disabled = true;
+                filterDiameterSelect.disabled = true;
+
+                // Pre-fill filters from URL parameters
+                prefillFiltersFromURL(fetchedOptions);
+                applyFilters(); // Apply filters based on URL params or defaults
+
+            } else {
+                // Fallback: populate with data extracted from DOM if fetch fails
+                const widthsFromDOM = [...new Set(allProductsDomData.map(p => p.width).filter(Boolean))].sort((a,b) => Number(a) - Number(b));
+                const ratiosFromDOM = [...new Set(allProductsDomData.map(p => p.ratio).filter(Boolean))].sort((a,b) => Number(a) - Number(b));
+                const diametersFromDOM = [...new Set(allProductsDomData.map(p => p.diameter).filter(Boolean))].sort((a,b) => Number(a) - Number(b));
+                const brandsFromDOM = [...new Set(allProductsDomData.map(p => p.brand).filter(Boolean))].sort();
+
+                populateSelectWithOptionsGeneric(filterWidthSelect, widthsFromDOM, "", "Tout");
+                populateSelectWithOptionsGeneric(filterRatioSelect, ratiosFromDOM, "", "Tout");
+                populateSelectWithOptionsGeneric(filterDiameterSelect, diametersFromDOM, "", "Tout", "", "R");
+                populateSelectWithOptionsGeneric(filterBrandSelect, brandsFromDOM, "", "Toutes");
+                
+                // Pre-fill filters from URL parameters even with DOM data
+                prefillFiltersFromURL(null); // Pass null as fetchedOptions unavailable
+                applyFilters();
             }
-            values.forEach(value => {
-                const stringValue = String(value);
-                if (value && !existingOptions.has(valuePrefix + stringValue)) {
-                    const option = document.createElement('option');
-                    option.value = valuePrefix + stringValue;
-                    option.textContent = displayPrefix + stringValue;
-                    fragment.appendChild(option);
-                    existingOptions.add(valuePrefix + stringValue);
-                }
+        }
+
+        function updateProductPageDependentFilters() {
+            if (!allFilterOptionsData || allFilterOptionsData.error) { // If fetched data is not available, disable dependent logic for now
+                filterRatioSelect.disabled = !filterWidthSelect.value;
+                filterDiameterSelect.disabled = !filterWidthSelect.value || !filterRatioSelect.value;
+                return;
+            }
+
+            const selectedWidth = filterWidthSelect.value;
+            const selectedRatio = filterRatioSelect.value;
+
+            if (selectedWidth) {
+                const availableHauteurs = [...new Set(
+                    allFilterOptionsData.dimensions_completes
+                        .filter(dim => dim.l === selectedWidth)
+                        .map(dim => dim.h)
+                )].sort((a, b) => Number(a) - Number(b));
+                populateSelectWithOptionsGeneric(filterRatioSelect, availableHauteurs, "", "Tout");
+                filterRatioSelect.disabled = availableHauteurs.length === 0;
+            } else {
+                populateSelectWithOptionsGeneric(filterRatioSelect, [], "", "Tout");
+                filterRatioSelect.disabled = true;
+                filterRatioSelect.value = "";
+            }
+
+            if (selectedWidth && selectedRatio) {
+                const availableDiameters = [...new Set(
+                    allFilterOptionsData.dimensions_completes
+                        .filter(dim => dim.l === selectedWidth && dim.h === selectedRatio)
+                        .map(dim => dim.d)
+                )].sort((a, b) => Number(a) - Number(b));
+                populateSelectWithOptionsGeneric(filterDiameterSelect, availableDiameters, "", "Tout", "", "R");
+                filterDiameterSelect.disabled = availableDiameters.length === 0;
+            } else {
+                populateSelectWithOptionsGeneric(filterDiameterSelect, [], "", "Tout", "", "R");
+                filterDiameterSelect.disabled = true;
+                filterDiameterSelect.value = "";
+            }
+        }
+
+        if (filterWidthSelect) {
+            filterWidthSelect.addEventListener('change', () => {
+                filterRatioSelect.value = "";
+                filterDiameterSelect.value = "";
+                updateProductPageDependentFilters();
+                // No direct applyFilters() here, user clicks "Apply Filters" button
             });
-            if (fragment.childNodes.length > 0) {
-                 selectElement.appendChild(fragment);
-            }
+        }
+        if (filterRatioSelect) {
+            filterRatioSelect.addEventListener('change', () => {
+                filterDiameterSelect.value = "";
+                updateProductPageDependentFilters();
+                // No direct applyFilters() here
+            });
         }
 
-        function populateFilterOptions(products) {
-            const widths = [...new Set(products.map(p => p.width).filter(Boolean))].sort((a,b) => Number(a) - Number(b));
-            const ratios = [...new Set(products.map(p => p.ratio).filter(Boolean))].sort((a,b) => Number(a) - Number(b));
-            const diameters = [...new Set(products.map(p => p.diameter).filter(Boolean))].sort((a,b) => Number(a) - Number(b));
-            const brands = [...new Set(products.map(p => p.brand).filter(Boolean))].sort();
-
-            populateSelectWithOptions(filterWidthSelect, widths);
-            populateSelectWithOptions(filterRatioSelect, ratios);
-            if (filterDiameterSelect) {
-                 const fragment = document.createDocumentFragment();
-                 const existingDiameterOptions = new Set(Array.from(filterDiameterSelect.options).map(opt => opt.value));
-                 if (filterDiameterSelect.options.length > 0 && filterDiameterSelect.options[0].value === "") {
-                    existingDiameterOptions.delete("");
-                 }
-                 diameters.forEach(value => {
-                     const stringValue = String(value);
-                     if (value && !existingDiameterOptions.has(stringValue)) {
-                         const option = document.createElement('option');
-                         option.value = stringValue;
-                         option.textContent = "R" + stringValue;
-                         fragment.appendChild(option);
-                         existingDiameterOptions.add(stringValue);
-                     }
-                 });
-                 if (fragment.childNodes.length > 0) {
-                    filterDiameterSelect.appendChild(fragment);
-                 }
-            }
-            populateSelectWithOptions(filterBrandSelect, brands);
-        }
 
         function applyFilters() {
-            if (!allProductsData || allProductsData.length === 0) return;
+            if (!allProductsDomData || allProductsDomData.length === 0) return;
 
             const selectedWidth = filterWidthSelect ? filterWidthSelect.value : "";
             const selectedRatio = filterRatioSelect ? filterRatioSelect.value : "";
             const selectedDiameter = filterDiameterSelect ? filterDiameterSelect.value : "";
             const selectedBrand = filterBrandSelect ? filterBrandSelect.value : "";
-            const selectedType = filterTypeSelect ? filterTypeSelect.value : "";
+            const selectedType = filterTypeSelect ? filterTypeSelect.value : ""; // Saison
             const isRunflatSelected = filterRunflatCheckbox ? filterRunflatCheckbox.checked : false;
             const isReinforcedSelected = filterReinforcedCheckbox ? filterReinforcedCheckbox.checked : false;
-
-            allProductsData.forEach(product => {
+            
+            let visibleCount = 0;
+            allProductsDomData.forEach(product => {
                 let matches = true;
                 if (selectedWidth && product.width !== selectedWidth) matches = false;
                 if (selectedRatio && product.ratio !== selectedRatio) matches = false;
-                if (selectedDiameter && product.diameter !== selectedDiameter) matches = false;
+                if (selectedDiameter && product.diameter !== selectedDiameter) matches = false; // product.diameter is just '16', selectedDiameter is 'R16'
                 if (selectedBrand && product.brand !== selectedBrand) matches = false;
                 if (selectedType && product.type !== selectedType) matches = false;
 
@@ -227,51 +291,62 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (isReinforcedSelected && !product.reinforced) matches = false;
 
                 product.domElement.classList.toggle('product-hidden', !matches);
+                if (matches) visibleCount++;
             });
+            
+            const productCountElement = document.getElementById('product-results-count');
+            if (productCountElement) {
+                productCountElement.textContent = visibleCount;
+            }
+
 
             if (typeof AOS !== 'undefined') {
                 AOS.refresh();
             }
         }
 
-        allProductsData = extractProductData();
-
-        if (allProductsData.length > 0) {
-            populateFilterOptions(allProductsData);
-
-            const filterInputs = [
-                filterWidthSelect, filterRatioSelect, filterDiameterSelect,
-                filterBrandSelect, filterTypeSelect,
-                filterRunflatCheckbox, filterReinforcedCheckbox
-            ];
-            filterInputs.forEach(input => {
-                if (input) input.addEventListener('change', applyFilters);
-            });
-
-            if (resetFiltersButton) {
-                resetFiltersButton.addEventListener('click', () => {
-                    filterInputs.forEach(input => {
-                        if (input) {
-                            if (input.type === 'checkbox') {
-                                input.checked = false;
-                            } else {
-                                input.value = "";
-                            }
-                        }
-                    });
-                    applyFilters();
-                });
-            }
-        } else {
-            // console.warn("Product filtering not initialized: No product data or essential elements missing.");
+        if (allProductsDomData.length === 0 && productGrid) { // Check if data needs to be extracted
+           initializeProductPageFilters(); // This will also call ensureFilterDataFetched
+        } else if (productGrid) { // Data might be populated by PHP, but filters still need init
+           initializeProductPageFilters();
         }
 
-        // === Off-Canvas Filter Panel Logic (produits.html) ===
+
+        // Event listeners for filter changes (but apply is manual via button)
+        // The actual filtering is done when "Appliquer les Filtres" is clicked.
+        // So, we don't need individual change listeners on each input to call applyFilters().
+        // updateProductPageDependentFilters handles the dynamic select options.
+
+        if (resetFiltersButton) {
+            resetFiltersButton.addEventListener('click', () => {
+                filterWidthSelect.value = "";
+                filterRatioSelect.value = "";
+                filterDiameterSelect.value = "";
+                filterBrandSelect.value = "";
+                filterTypeSelect.value = "";
+                if(filterRunflatCheckbox) filterRunflatCheckbox.checked = false;
+                if(filterReinforcedCheckbox) filterReinforcedCheckbox.checked = false;
+                
+                updateProductPageDependentFilters(); // Reset dependent dropdowns state
+                applyFilters(); // Apply after reset
+                // Optionally close panel if open: closeFiltersPanel();
+            });
+        }
+        
+        if (applyFiltersAndCloseButton) { // This is the button inside the filter panel
+            applyFiltersAndCloseButton.addEventListener('click', () => {
+                applyFilters();
+                closeFiltersPanel(); // This function is defined below
+            });
+        }
+        
+
+        // === Off-Canvas Filter Panel Logic (produits.php) ===
         const openFiltersPanelButton = document.getElementById('open-filters-panel');
         const closeFiltersPanelButton = document.getElementById('close-filters-panel');
         const filtersPanel = document.getElementById('filters-panel');
         const filtersOverlay = document.getElementById('filters-overlay');
-        const applyFiltersAndCloseButton = document.getElementById('apply-filters-button');
+        // const applyFiltersAndCloseButton = document.getElementById('apply-filters-button'); // Déclaration redondante, déjà défini plus haut dans le scope de productFiltersForm
 
         function openFiltersPanel() {
             if (filtersPanel && filtersOverlay) {
@@ -505,37 +580,148 @@ document.addEventListener('DOMContentLoaded', () => {
         const qfWidthSelect = document.getElementById('qf-width');
         const qfRatioSelect = document.getElementById('qf-ratio');
         const qfDiameterSelect = document.getElementById('qf-diameter');
+        const qfChargeSelect = document.getElementById('charge'); // ID from index.php
+        const qfVitesseSelect = document.getElementById('vitesse'); // ID from index.php
+        const qfMarqueSelect = document.getElementById('marque'); // ID from index.php
+        // Note: Saison ('qf-type') and Spécificité ('specificite') are already populated or handled differently.
 
-        const sampleWidths = ["175", "185", "195", "205", "215", "225", "235", "245", "255"];
-        const sampleRatios = ["40", "45", "50", "55", "60", "65", "70"];
-        const sampleDiameters = ["15", "16", "17", "18", "19"];
+        let allFilterData = {
+            largeurs: [],
+            hauteurs: [],
+            diametres: [],
+            charges: [],
+            vitesses: [],
+            marques: [],
+            dimensions_completes: []
+        };
 
-        function populateQuickFilterSelect(selectElement, options, defaultText) {
+        function populateSelectWithOptionsGeneric(selectElement, options, placeholderValue, placeholderText, valuePrefix = '', textPrefix = '') {
             if (!selectElement) return;
+            selectElement.innerHTML = `<option value="${placeholderValue}">${placeholderText}</option>`; // Clear existing options and add placeholder
+            const fragment = document.createDocumentFragment();
             options.forEach(optValue => {
                 const option = document.createElement('option');
-                option.value = optValue;
-                option.textContent = defaultText === "Diamètre" ? `R${optValue}` : optValue;
-                selectElement.appendChild(option);
+                option.value = valuePrefix + optValue;
+                option.textContent = textPrefix + optValue;
+                fragment.appendChild(option);
+            });
+            selectElement.appendChild(fragment);
+        }
+
+        async function fetchAndPopulateQuickFilters() {
+            try {
+                const response = await fetch('get_filter_options.php');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                allFilterData = await response.json();
+
+                if (allFilterData.error) {
+                    console.error("Error from get_filter_options.php:", allFilterData.error);
+                    // Populate with some defaults or show error
+                    populateSelectWithOptionsGeneric(qfWidthSelect, ["195", "205", "225"], "", "Largeur");
+                    populateSelectWithOptionsGeneric(qfRatioSelect, ["55", "60", "65"], "", "Hauteur");
+                    populateSelectWithOptionsGeneric(qfDiameterSelect, ["15", "16", "17"], "", "Diamètre", "", "R");
+                    return;
+                }
+
+                // Initial population
+                populateSelectWithOptionsGeneric(qfWidthSelect, allFilterData.largeurs, "", "Largeur");
+                populateSelectWithOptionsGeneric(qfRatioSelect, [], "", "Hauteur"); // Empty initially
+                populateSelectWithOptionsGeneric(qfDiameterSelect, [], "", "Diamètre", "", "R"); // Empty initially
+                populateSelectWithOptionsGeneric(qfChargeSelect, allFilterData.charges, "", "Charge");
+                populateSelectWithOptionsGeneric(qfVitesseSelect, allFilterData.vitesses, "", "Vitesse");
+                populateSelectWithOptionsGeneric(qfMarqueSelect, allFilterData.marques, "", "Marque");
+                
+                qfRatioSelect.disabled = true;
+                qfDiameterSelect.disabled = true;
+
+            } catch (error) {
+                console.error("Could not fetch filter options:", error);
+                // Fallback or error message to user
+                populateSelectWithOptionsGeneric(qfWidthSelect, ["195", "205", "225"], "", "Largeur");
+                populateSelectWithOptionsGeneric(qfRatioSelect, ["55", "60", "65"], "", "Hauteur");
+                populateSelectWithOptionsGeneric(qfDiameterSelect, ["15", "16", "17"], "", "Diamètre", "", "R");
+            }
+        }
+
+        function updateDependentFilters() {
+            const selectedWidth = qfWidthSelect.value;
+            const selectedRatio = qfRatioSelect.value;
+
+            // Update Hauteurs based on Largeur
+            if (selectedWidth) {
+                const availableHauteurs = [...new Set(
+                    allFilterData.dimensions_completes
+                        .filter(dim => dim.l === selectedWidth)
+                        .map(dim => dim.h)
+                )].sort((a, b) => Number(a) - Number(b));
+                populateSelectWithOptionsGeneric(qfRatioSelect, availableHauteurs, "", "Hauteur");
+                qfRatioSelect.disabled = availableHauteurs.length === 0;
+            } else {
+                populateSelectWithOptionsGeneric(qfRatioSelect, [], "", "Hauteur");
+                qfRatioSelect.disabled = true;
+                qfRatioSelect.value = ""; // Reset
+            }
+
+            // Update Diamètres based on Largeur and Hauteur
+            if (selectedWidth && selectedRatio) {
+                const availableDiameters = [...new Set(
+                    allFilterData.dimensions_completes
+                        .filter(dim => dim.l === selectedWidth && dim.h === selectedRatio)
+                        .map(dim => dim.d)
+                )].sort((a, b) => Number(a) - Number(b));
+                populateSelectWithOptionsGeneric(qfDiameterSelect, availableDiameters, "", "Diamètre", "", "R");
+                qfDiameterSelect.disabled = availableDiameters.length === 0;
+            } else {
+                populateSelectWithOptionsGeneric(qfDiameterSelect, [], "", "Diamètre", "", "R");
+                qfDiameterSelect.disabled = true;
+                qfDiameterSelect.value = ""; // Reset
+            }
+             // TODO: Potentially update Charge/Vitesse based on L/H/D selected if needed
+        }
+
+        if (qfWidthSelect) {
+            qfWidthSelect.addEventListener('change', () => {
+                qfRatioSelect.value = ""; // Reset ratio
+                qfDiameterSelect.value = ""; // Reset diameter
+                updateDependentFilters();
+            });
+        }
+        if (qfRatioSelect) {
+            qfRatioSelect.addEventListener('change', () => {
+                qfDiameterSelect.value = ""; // Reset diameter
+                updateDependentFilters();
             });
         }
 
-        populateQuickFilterSelect(qfWidthSelect, sampleWidths, "Largeur");
-        populateQuickFilterSelect(qfRatioSelect, sampleRatios, "Hauteur");
-        populateQuickFilterSelect(qfDiameterSelect, sampleDiameters, "Diamètre");
+        fetchAndPopulateQuickFilters(); // Load initial data
 
         quickFilterForm.addEventListener('submit', function(event) {
             event.preventDefault();
             const width = qfWidthSelect.value;
             const ratio = qfRatioSelect.value;
             const diameter = qfDiameterSelect.value;
-            const type = document.getElementById('qf-type').value;
+            const type = document.getElementById('qf-type').value; // Saison
+            const charge = qfChargeSelect.value;
+            const vitesse = qfVitesseSelect.value;
+            const marque = qfMarqueSelect.value;
+            const specificite = document.getElementById('specificite').value; // Spécificité
+            const runflat = quickFilterForm.querySelector('input[name="runflat"]').checked;
+            const renforce = quickFilterForm.querySelector('input[name="renforce"]').checked;
+
 
             const queryParams = new URLSearchParams();
             if (width) queryParams.set('width', width);
             if (ratio) queryParams.set('ratio', ratio);
             if (diameter) queryParams.set('diameter', diameter);
             if (type) queryParams.set('type', type);
+            if (charge) queryParams.set('charge', charge);
+            if (vitesse) queryParams.set('vitesse', vitesse);
+            if (marque) queryParams.set('marque', marque);
+            if (specificite) queryParams.set('specificite', specificite);
+            if (runflat) queryParams.set('runflat', 'true');
+            if (renforce) queryParams.set('renforce', 'true');
 
             window.location.href = `produits.php?${queryParams.toString()}`;
         });

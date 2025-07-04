@@ -131,7 +131,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <section class="admin-login-section">
         <div class="admin-auth-container">
-            <img src="assets/images/ouiPneu.png" alt="Logo Ouipneu.fr" style="max-width: 160px; margin-bottom: 1.5rem; filter: invert(1) brightness(1.8) contrast(1.1);">
+            <img src="assets/images/logobg.png" alt="Logo Ouipneu.fr" style="max-width: 160px; margin-bottom: 1.5rem; filter: invert(1) brightness(1.8) contrast(1.1);">
             <h1 class="admin-auth-title">Accès Administration</h1>
 
             <?php if (!empty($error_message)): ?>

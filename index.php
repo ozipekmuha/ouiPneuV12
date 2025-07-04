@@ -538,7 +538,7 @@ try {
                         <p>Merci de faire confiance à Ouipneu.fr pour la sécurité et la performance de votre véhicule.</p>
                     </div>
                     <div class="about-us-image-container">
-                        <img loading="lazy" width="500" height="350" src="./assets/images/ouiPneu.png" alt="L'équipe Ouipneu.fr">
+                        <img loading="lazy" width="500" height="350" src="./assets/images/logobg.png" alt="L'équipe Ouipneu.fr">
                     </div>
                 </div>
             </div>

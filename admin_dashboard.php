@@ -396,7 +396,7 @@ try {
 <body>
     <header class="admin-header">
         <div class="logo">
-            <a href="admin_dashboard.php"><img src="assets/images/ouiPneu.png" alt="Logo Ouipneu.fr" style="max-width: 150px; filter: invert(1) brightness(1.8) contrast(1.1);"></a>
+            <a href="admin_dashboard.php"><img src="assets/images/logobg.png" alt="Logo Ouipneu.fr" style="max-width: 150px; filter: invert(1) brightness(1.8) contrast(1.1);"></a>
         </div>
         <div class="admin-user-info">
             <span><?php echo isset($_SESSION['admin_username']) ? htmlspecialchars($_SESSION['admin_username']) : 'Admin'; ?> | <a href="admin_logout.php">Déconnexion</a></span>
