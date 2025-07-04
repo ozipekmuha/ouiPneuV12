@@ -539,4 +539,3 @@ $header_cart_count = array_sum($_SESSION['panier'] ?? []);
 </body>
 </html>
 
-[end of dashboard.php]

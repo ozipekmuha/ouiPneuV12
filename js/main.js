@@ -387,31 +387,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Pre-fill filters from URL parameters on produits.php
-        if (window.location.pathname.endsWith('produits.php') && allProductsData.length > 0) {
-            const urlParams = new URLSearchParams(window.location.search);
-            let filtersAppliedFromUrl = false;
+        // This block is now handled by prefillFiltersFromURL() inside initializeProductPageFilters().
+        // if (window.location.pathname.endsWith('produits.php') && allProductsDomData.length > 0) { // Corrected to allProductsDomData but logic moved
+        //     const urlParams = new URLSearchParams(window.location.search);
+        //     let filtersAppliedFromUrl = false;
 
-            if (urlParams.has('width') && filterWidthSelect) {
-                filterWidthSelect.value = urlParams.get('width');
-                filtersAppliedFromUrl = true;
-            }
-            if (urlParams.has('ratio') && filterRatioSelect) {
-                filterRatioSelect.value = urlParams.get('ratio');
-                filtersAppliedFromUrl = true;
-            }
-            if (urlParams.has('diameter') && filterDiameterSelect) {
-                filterDiameterSelect.value = urlParams.get('diameter');
-                filtersAppliedFromUrl = true;
-            }
-            if (urlParams.has('type') && filterTypeSelect) {
-                filterTypeSelect.value = urlParams.get('type');
-                filtersAppliedFromUrl = true;
-            }
+        //     if (urlParams.has('width') && filterWidthSelect) {
+        //         filterWidthSelect.value = urlParams.get('width');
+        //         filtersAppliedFromUrl = true;
+        //     }
+        //     if (urlParams.has('ratio') && filterRatioSelect) {
+        //         filterRatioSelect.value = urlParams.get('ratio');
+        //         filtersAppliedFromUrl = true;
+        //     }
+        //     if (urlParams.has('diameter') && filterDiameterSelect) {
+        //         filterDiameterSelect.value = urlParams.get('diameter');
+        //         filtersAppliedFromUrl = true;
+        //     }
+        //     if (urlParams.has('type') && filterTypeSelect) {
+        //         filterTypeSelect.value = urlParams.get('type');
+        //         filtersAppliedFromUrl = true;
+        //     }
 
-            if (filtersAppliedFromUrl) {
-                applyFilters();
-            }
-        }
+        //     if (filtersAppliedFromUrl) {
+        //         applyFilters(); // This also needs allProductsDomData to be ready
+        //     }
+        // }
 
         // === Product Sorting Logic (produits.html) ===
         const sortBySelect = document.getElementById('sort-by');
@@ -460,8 +461,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // === Address Modal JS ===
     const addressModalOverlay = document.getElementById('address-modal');
+    console.log('Address Modal Overlay Element:', addressModalOverlay); // DEBUG
     if (addressModalOverlay) {
+        console.log('Address modal overlay FOUND. Initializing address modal logic...'); // DEBUG
         const openModalButton = document.getElementById('add-new-address-button'); // Updated ID
+        console.log('Open Address Modal Button:', openModalButton); // DEBUG
         const closeModalButton = addressModalOverlay.querySelector('.modal-close-button');
         const cancelModalButton = addressModalOverlay.querySelector('.modal-cancel-button');
         const addressForm = document.getElementById('address-form');
@@ -503,7 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
             addressModalOverlay.style.display = 'flex';
             setTimeout(() => {
                 addressModalOverlay.classList.add('is-visible');
-                document.body.style.overflow = 'hidden';
+                // document.body.style.overflow = 'hidden'; // TEST: Temporarily comment out
             }, 10);
         }
 
@@ -514,7 +518,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!addressModalOverlay.classList.contains('is-visible')) {
                     addressModalOverlay.style.display = 'none';
                 }
-                 document.body.style.overflow = '';
+                 document.body.style.overflow = ''; // Ensure this is still reset
             }, 300); // Match transition duration (approx)
         }
 
@@ -1046,7 +1050,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // === Order Detail Modal (dashboard.php) ===
     const orderDetailModalOverlay = document.getElementById('order-detail-modal');
+    console.log('Order Detail Modal Overlay Element:', orderDetailModalOverlay); // DEBUG
     if (orderDetailModalOverlay) {
+        console.log('Order Detail modal overlay FOUND. Initializing order detail modal logic...'); // DEBUG
         const orderModalTitle = orderDetailModalOverlay.querySelector('#order-modal-title');
         const orderModalBodyContent = orderDetailModalOverlay.querySelector('#order-modal-body-content');
         const orderModalCloseButtons = orderDetailModalOverlay.querySelectorAll('.modal-close-button, .modal-cancel-button');
@@ -1073,14 +1079,14 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
 
             if (orderData.line_items && orderData.line_items.length > 0) {
-                contentHtml += `<table class="order-summary-table" style="font-size:0.85rem;">
+                contentHtml += `<table class="order-summary-table">
                                     <thead>
                                         <tr>
-                                            <th style="width:60px;">Image</th>
-                                            <th>Produit</th>
-                                            <th style="text-align:right;">Qté</th>
-                                            <th style="text-align:right;">Prix Unitaire TTC</th>
-                                            <th style="text-align:right;">Total Ligne TTC</th>
+                                            <th class="col-image">Image</th>
+                                            <th class="col-product">Produit</th>
+                                            <th class="col-qty">Qté</th>
+                                            <th class="col-price">Prix Unitaire TTC</th>
+                                            <th class="col-total">Total Ligne TTC</th>
                                         </tr>
                                     </thead>
                                     <tbody>`;
@@ -1089,11 +1095,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     const totalLigneTTC = parseFloat(item.total_ligne_ttc_calc).toFixed(2).replace('.', ',');
                     const imageUrl = item.image || 'https://placehold.co/50x50/1e1e1e/ffdd03?text=Pneu';
                     contentHtml += `<tr>
-                                        <td><img src="${imageUrl}" alt="${item.nom_produit_commande || 'Produit'}" style="width:50px; height:auto;"></td>
-                                        <td>${item.nom_produit_commande || 'N/A'}<br><small>${item.taille_produit_commande || ''}</small></td>
-                                        <td style="text-align:right;">${item.quantite}</td>
-                                        <td style="text-align:right;">${prixUnitaireTTC} €</td>
-                                        <td style="text-align:right;">${totalLigneTTC} €</td>
+                                        <td data-label="Image"><img src="${imageUrl}" alt="${item.nom_produit_commande || 'Produit'}"></td>
+                                        <td data-label="Produit">${item.nom_produit_commande || 'N/A'}<br><small class="text-muted">${item.taille_produit_commande || ''}</small></td>
+                                        <td data-label="Qté">${item.quantite}</td>
+                                        <td data-label="Prix Unitaire">${prixUnitaireTTC} €</td>
+                                        <td data-label="Total Ligne">${totalLigneTTC} €</td>
                                     </tr>`;
                 });
                 contentHtml += `    </tbody>
@@ -1102,44 +1108,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 contentHtml += "<p>Aucun article trouvé pour cette commande.</p>";
             }
 
-            // Order Totals Summary (Subtotal, Shipping, etc. from Commandes table)
-            const subTotalTTC = parseFloat(orderData.montant_sous_total / (1 - (parseFloat(orderData.taux_tva_applique) / 100)) ).toFixed(2).replace('.',','); // Approximation if not stored directly
-                                // This calculation is likely wrong if montant_sous_total is HT.
-                                // Assuming it's HT from schema, then TTC = HT * (1 + TVA_RATE)
-                                // For now, let's use the values from Commandes table if they are reliable (e.g. montant_sous_total is HT)
-                                // The schema for Commandes actually stores montant_sous_total (HT), montant_livraison (HT), montant_reduction (HT),
-                                // montant_total_ht, montant_tva, montant_total_ttc.
-                                // So we should use these directly.
-
-            let subtotalForDisplay = (parseFloat(orderData.montant_total_ttc) - parseFloat(orderData.montant_livraison) + parseFloat(orderData.montant_reduction)).toFixed(2).replace('.',',');
+            // Order Totals Summary
             let itemsSubtotalTTC = 0;
             if (orderData.line_items && orderData.line_items.length > 0) {
                  orderData.line_items.forEach(item => itemsSubtotalTTC += parseFloat(item.total_ligne_ttc_calc));
             }
 
-            const FIXED_JS_TVA_RATE = 0.20; // This should align with PHP's $TVA_RATE
-
-            const shippingCostHT = parseFloat(orderData.montant_livraison || 0);
-            const shippingCostTTC = shippingCostHT * (1 + FIXED_JS_TVA_RATE);
-
-            const reductionAmountHT = parseFloat(orderData.montant_reduction || 0);
-            const reductionAmountTTC = reductionAmountHT * (1 + FIXED_JS_TVA_RATE);
-
-            contentHtml += `<div class="order-totals" style="margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--border-color);">
-                                <p><span>Sous-total des articles (TTC) :</span> <span>${itemsSubtotalTTC.toFixed(2).replace('.', ',')} €</span></p>
-                                <p><span>Livraison (TTC) :</span> <span>${shippingCostTTC.toFixed(2).replace('.', ',')} €</span></p>
-                                ${reductionAmountTTC > 0 ? `<p><span>Réduction (TTC) :</span> <span style="color:green;">-${reductionAmountTTC.toFixed(2).replace('.', ',')} €</span></p>` : ''}
-                                <hr>
-                                <p class="grand-total"><span>TOTAL PAYÉ TTC :</span> <span>${parseFloat(orderData.montant_total_ttc).toFixed(2).replace('.', ',')} €</span></p>
+            // Utiliser les montants de la commande principale autant que possible
+            const livraisonTTC = parseFloat(orderData.montant_livraison_ttc || (parseFloat(orderData.montant_livraison || 0) * (1 + (parseFloat(orderData.taux_tva_applique_commande || 20) / 100)))).toFixed(2).replace('.', ',');
+            const reductionTTC = parseFloat(orderData.montant_reduction_ttc || (parseFloat(orderData.montant_reduction || 0) * (1 + (parseFloat(orderData.taux_tva_applique_commande || 20) / 100)))).toFixed(2).replace('.', ',');
+            const totalPayeTTC = parseFloat(orderData.montant_total_ttc).toFixed(2).replace('.', ',');
+            
+            contentHtml += `<div class="order-totals">
+                                <div class="summary-row"><span>Sous-total des articles (TTC) :</span> <span>${itemsSubtotalTTC.toFixed(2).replace('.', ',')} €</span></div>
+                                <div class="summary-row"><span>Livraison (TTC) :</span> <span>${livraisonTTC} €</span></div>
+                                ${parseFloat(reductionTTC.replace(',','.')) > 0 ? `<div class="summary-row reduction"><span>Réduction (TTC) :</span> <span>-${reductionTTC} €</span></div>` : ''}
+                                <hr class="summary-divider-hr">
+                                <div class="summary-row grand-total"><span>TOTAL PAYÉ TTC :</span> <span>${totalPayeTTC} €</span></div>
                             </div>`;
-
 
             orderModalBodyContent.innerHTML = contentHtml;
 
             orderDetailModalOverlay.style.display = 'flex';
             setTimeout(() => {
                 orderDetailModalOverlay.classList.add('is-visible');
-                document.body.style.overflow = 'hidden';
+                // document.body.style.overflow = 'hidden'; // TEST: Temporarily comment out
             }, 10);
         }
 
@@ -1149,7 +1142,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!orderDetailModalOverlay.classList.contains('is-visible')) {
                     orderDetailModalOverlay.style.display = 'none';
                 }
-                document.body.style.overflow = '';
+                document.body.style.overflow = ''; // Ensure this is still reset
             }, 300);
         }
 
@@ -1163,16 +1156,19 @@ document.addEventListener('DOMContentLoaded', () => {
                         const orderDataString = viewOrderLink.dataset.orderDetails;
                         if (orderDataString) {
                             const orderData = JSON.parse(orderDataString);
-                            openOrderDetailModal(orderData);
+                            openOrderDetailModal(orderData); 
                         } else {
-                            console.error('Order data not found on view link.');
-                            orderModalBodyContent.innerHTML = "<p>Erreur: Données de la commande non trouvées.</p>";
-                            openOrderDetailModal({id_commande: 'Erreur'}); // Open modal with error
+                            console.error('Order data not found on view link (data-order-details attribute missing or empty).');
+                            // Optionnel: Afficher un message à l'utilisateur dans la modale si elle pouvait s'ouvrir partiellement
+                            // if(orderModalBodyContent) orderModalBodyContent.innerHTML = "<p>Erreur: Données de la commande non trouvées sur le lien.</p>";
+                            // openOrderDetailModal({id_commande: 'Erreur de données'}); 
                         }
                     } catch (e) {
-                        console.error('Error parsing order data:', e);
-                        orderModalBodyContent.innerHTML = "<p>Erreur: Impossible de lire les données de la commande.</p>";
-                        openOrderDetailModal({id_commande: 'Erreur'}); // Open modal with error
+                        console.error('Error parsing JSON from data-order-details:', e);
+                        console.error('Problematic JSON string:', orderDataString); // Log the problematic string
+                        // Optionnel: Afficher un message à l'utilisateur
+                        // if(orderModalBodyContent) orderModalBodyContent.innerHTML = "<p>Erreur: Impossible de lire les données de la commande (format JSON invalide).</p>";
+                        // openOrderDetailModal({id_commande: 'Erreur JSON'});
                     }
                 }
             });
