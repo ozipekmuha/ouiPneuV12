@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processus de Commande - Ouipneu.fr</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <header id="main-header">
+        <div class="container">
+            <div class="logo">
+                <!-- Modifié pour toujours avoir un lien vers l'index -->
+                <a href="index.html"><img src="images/logo-placeholder-dark.png" alt="Logo Ouipneu.fr"></a>
+            </div>
+            <nav class="main-nav">
+                <ul id="main-nav-links">
+                    <li><a href="index.html" aria-label="Accueil">Accueil</a></li>
+                    <li><a href="produits.html" aria-label="Nos Pneus">Nos Pneus</a></li>
+                    <li><a href="contact.html" aria-label="Contact">Contact</a></li>
+                    <li><a href="index.html#about-us" aria-label="À propos de nous">À Propos</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <form class="search-bar" role="search"> <!-- Ajout de role="search" -->
+                    <input type="search" placeholder="Rechercher des pneus..." aria-label="Rechercher des pneus">
+                    <button type="submit" aria-label="Lancer la recherche"><i class="fas fa-search"></i></button>
+                </form>
+                <div class="account-icon">
+                    <!-- Lien standard vers dashboard.html, la logique de redirection vers login si non connecté sera gérée ultérieurement ou côté serveur -->
+                    <a href="dashboard.html" aria-label="Mon Compte"><i class="fas fa-user-circle"></i></a>
+                </div>
+                <div class="cart-icon">
+                    <a href="panier.html" aria-label="Panier"><i class="fas fa-shopping-cart"></i><span class="cart-item-count">0</span></a>
+                </div>
+                <button id="hamburger-button" class="hamburger-button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav-links">
+                    <span class="hamburger-box">
+                        <span class="hamburger-inner"></span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="site-main-content">
+        <section id="checkout-section" class="section-padding">
+            <div class="container">
+                <h1 class="page-title" data-aos="fade-up">Finaliser ma Commande</h1>
+
+                <div class="checkout-layout" data-aos="fade-up" data-aos-delay="100">
+                    <div class="checkout-steps">
+                        <!-- Étape 1: Adresses -->
+                        <div class="checkout-step" id="step-address">
+                            <h2 class="checkout-step-title">1. Adresses</h2>
+                            <div class="address-form-group">
+                                <h3>Adresse de Livraison</h3>
+                                <form id="shipping-address-form" class="address-form">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="checkout-shipping-firstname">Prénom</label>
+                                            <input type="text" id="checkout-shipping-firstname" name="shipping_firstname" required autocomplete="given-name">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="checkout-shipping-lastname">Nom</label>
+                                            <input type="text" id="checkout-shipping-lastname" name="shipping_lastname" required autocomplete="family-name">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="checkout-shipping-street">Adresse (N° et rue)</label>
+                                        <input type="text" id="checkout-shipping-street" name="shipping_street" required autocomplete="shipping street-address">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="checkout-shipping-complement">Complément d'adresse</label>
+                                        <input type="text" id="checkout-shipping-complement" name="shipping_complement" autocomplete="shipping address-line2">
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="checkout-shipping-zipcode">Code Postal</label>
+                                            <input type="text" id="checkout-shipping-zipcode" name="shipping_zipcode" required autocomplete="shipping postal-code">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="checkout-shipping-city">Ville</label>
+                                            <input type="text" id="checkout-shipping-city" name="shipping_city" required autocomplete="shipping address-level2">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="checkout-shipping-country">Pays</label>
+                                        <select id="checkout-shipping-country" name="shipping_country" required autocomplete="shipping country">
+                                            <option value="FR" selected>France</option>
+                                            <option value="BE">Belgique</option>
+                                            <option value="CH">Suisse</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="checkout-shipping-phone">Téléphone</label>
+                                        <input type="tel" id="checkout-shipping-phone" name="shipping_phone" autocomplete="shipping tel">
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="address-form-group">
+                                <h3>Adresse de Facturation</h3>
+                                <form id="billing-address-form-container"> {/* Changed ID for clarity */}
+                                    <div class="form-group checkbox-group">
+                                        <input type="checkbox" id="same-as-shipping" name="same_as_shipping" checked>
+                                        <label for="same-as-shipping" class="checkbox-label">Identique à l'adresse de livraison</label>
+                                    </div>
+                                    <div id="billing-address-fields" class="address-form" style="display:none;"> {/* Added address-form class */}
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="checkout-billing-firstname">Prénom</label>
+                                                <input type="text" id="checkout-billing-firstname" name="billing_firstname" autocomplete="given-name">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="checkout-billing-lastname">Nom</label>
+                                                <input type="text" id="checkout-billing-lastname" name="billing_lastname" autocomplete="family-name">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="checkout-billing-street">Adresse (N° et rue)</label>
+                                            <input type="text" id="checkout-billing-street" name="billing_street" autocomplete="billing street-address">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="checkout-billing-complement">Complément d'adresse</label>
+                                            <input type="text" id="checkout-billing-complement" name="billing_complement" autocomplete="billing address-line2">
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="checkout-billing-zipcode">Code Postal</label>
+                                                <input type="text" id="checkout-billing-zipcode" name="billing_zipcode" autocomplete="billing postal-code">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="checkout-billing-city">Ville</label>
+                                                <input type="text" id="checkout-billing-city" name="billing_city" autocomplete="billing address-level2">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="checkout-billing-country">Pays</label>
+                                            <select id="checkout-billing-country" name="billing_country" autocomplete="billing country">
+                                                <option value="FR" selected>France</option>
+                                                <option value="BE">Belgique</option>
+                                                <option value="CH">Suisse</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <button type="button" class="cta-button next-step-button" data-next="step-shipping-method">Suivant: Mode de Livraison</button>
+                        </div>
+
+                        <!-- Étape 2: Mode de Livraison -->
+                        <div class="checkout-step" id="step-shipping-method" style="display:none;">
+                            <h2 class="checkout-step-title">2. Mode de Livraison</h2>
+                            <form id="shipping-method-form">
+                                <div class="form-group">
+                                    <label>Choisissez votre mode de livraison :</label>
+                                    <div class="radio-option">
+                                        <input type="radio" id="shipping-standard" name="shipping_method" value="standard" checked>
+                                        <label for="shipping-standard">Livraison Standard (3-5 jours ouvrés) - 5,99 €</label>
+                                    </div>
+                                    <div class="radio-option">
+                                        <input type="radio" id="shipping-express" name="shipping_method" value="express">
+                                        <label for="shipping-express">Livraison Express (1-2 jours ouvrés) - 12,99 €</label>
+                                    </div>
+                                    <div class="radio-option">
+                                        <input type="radio" id="shipping-pickup" name="shipping_method" value="pickup">
+                                        <label for="shipping-pickup">Retrait en magasin partenaire (Gratuit)</label>
+                                    </div>
+                                </div>
+                            </form>
+                            <button type="button" class="cta-button secondary prev-step-button" data-prev="step-address">Précédent: Adresses</button>
+                            <button type="button" class="cta-button next-step-button" data-next="step-payment">Suivant: Paiement</button>
+                        </div>
+
+                        <!-- Étape 3: Paiement -->
+                        <div class="checkout-step" id="step-payment" style="display:none;">
+                            <h2 class="checkout-step-title">3. Paiement</h2>
+                            <form id="payment-form">
+                                <div class="form-group">
+                                    <label>Choisissez votre mode de paiement :</label>
+                                    <div class="radio-option">
+                                        <input type="radio" id="payment-card" name="payment_method" value="card" checked>
+                                        <label for="payment-card">Carte Bancaire</label>
+                                    </div>
+                                    <div id="card-details-fields" class="address-form" style="margin-top: 0.5rem; padding-left: 1.5rem;"> {/* Utiliser la classe address-form pour un style cohérent */}
+                                        <div class="form-group">
+                                            <label for="card-name">Nom sur la carte</label>
+                                            <input type="text" id="card-name" name="card_name" placeholder="Jean Dupont" autocomplete="cc-name" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="card-number">Numéro de carte</label>
+                                            <input type="text" id="card-number" name="card_number" placeholder="XXXX XXXX XXXX XXXX" autocomplete="cc-number" required inputmode="numeric" pattern="[\d\s]{13,19}">
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="card-expiry">Date d'expiration (MM/AA)</label>
+                                                <input type="text" id="card-expiry" name="card_expiry" placeholder="MM/AA" autocomplete="cc-exp" required pattern="\d{2}\s*\/\s*\d{2}">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="card-cvv">CVV</label>
+                                                <input type="text" id="card-cvv" name="card_cvv" placeholder="XXX" autocomplete="cc-csc" required inputmode="numeric" pattern="\d{3,4}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="radio-option">
+                                        <input type="radio" id="payment-paypal" name="payment_method" value="paypal">
+                                        <label for="payment-paypal">PayPal</label>
+                                    </div>
+                                </div>
+                            </form>
+                            <button type="button" class="cta-button secondary prev-step-button" data-prev="step-shipping-method">Précédent: Livraison</button>
+                            <button type="button" class="cta-button next-step-button" data-next="step-review">Suivant: Récapitulatif</button>
+                        </div>
+
+                        <!-- Étape 4: Récapitulatif -->
+                        <div class="checkout-step" id="step-review" style="display:none;">
+                            <h2 class="checkout-step-title">4. Récapitulatif de la Commande</h2>
+                            <div id="order-summary-content">
+                                <p><strong>Adresse de Livraison:</strong> [Adresse de livraison choisie]</p>
+                                <p><strong>Adresse de Facturation:</strong> [Adresse de facturation choisie]</p>
+                                <p><strong>Mode de Livraison:</strong> [Mode de livraison choisi]</p>
+                                <p><strong>Mode de Paiement:</strong> [Mode de paiement choisi]</p>
+                                <h3>Articles:</h3>
+                                <div id="checkout-cart-items">
+                                    <!-- Les articles du panier seront injectés ici par JS (simulation) -->
+                                    <p><em>- Pneu Exemple 1 (205/55R16) x 2 - 190,00 €</em></p>
+                                    <p><em>- Pneu Exemple 2 (195/65R15) x 1 - 85,00 €</em></p>
+                                </div>
+                                <hr>
+                                <p><strong>Sous-total:</strong> <span id="checkout-subtotal">275,00 €</span></p>
+                                <p><strong>Livraison:</strong> <span id="checkout-shipping-cost">5,99 €</span></p>
+                                <p><strong>Total TTC:</strong> <strong id="checkout-total">280,99 €</strong></p>
+                            </div>
+                            <div class="form-group checkbox-group">
+                                <input type="checkbox" id="checkout-agree-terms" name="agree_terms_checkout" required>
+                                <label for="checkout-agree-terms" class="checkbox-label">J'ai lu et j'accepte les <a href="cgv.html" target="_blank">Conditions Générales de Vente</a>.</label>
+                            </div>
+                            <button type="button" class="cta-button secondary prev-step-button" data-prev="step-payment">Précédent: Paiement</button>
+                            <button type="submit" form="payment-form" class="cta-button" id="confirm-order-button">Confirmer et Payer</button>
+                        </div>
+                    </div>
+
+                    <aside class="checkout-summary-aside">
+                        <div class="cart-summary-box">
+                            <h2>Récapitulatif</h2>
+                            <div id="aside-order-summary">
+                                <p><em>Le récapitulatif du panier s'affichera ici dynamiquement.</em></p>
+                            </div>
+                            <div class="summary-row">
+                                <span>Sous-total:</span>
+                                <span id="aside-cart-subtotal">...</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Livraison:</span>
+                                <span id="aside-cart-shipping">...</span>
+                            </div>
+                            <hr class="summary-divider">
+                            <div class="summary-row total-row">
+                                <span>Total TTC:</span>
+                                <span id="aside-cart-total">...</span>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="main-footer">
+        <div class="container">
+            <div class="footer-columns">
+                <div class="footer-column">
+                    <h3>Ouipneu.fr</h3>
+                    <p>Votre partenaire de confiance pour des pneus premium, un montage expert et un service client exceptionnel.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Navigation</h3>
+                    <ul>
+                        <li><a href="index.html">Accueil</a></li>
+                        <li><a href="produits.html">Produits</a></li>
+                        <li><a href="index.html#promotions">Promotions</a></li> <!-- Garder le lien vers la section pour l'instant -->
+                        <li><a href="contact.html">Contactez-nous</a></li>
+                        <li><a href="dashboard.html">Mon Compte</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Informations</h3>
+                    <ul>
+                        <li><a href="legal-notice.html">Mentions Légales</a></li>
+                        <li><a href="privacy-policy.html">Politique de Confidentialité</a></li>
+                        <li><a href="cgv.html">Conditions Générales de Vente</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Suivez-Nous</h3>
+                    <div class="social-icons">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="current-year"></span> Ouipneu.fr. Tous droits réservés. <span style="margin-left: 10px;">|</span> <a href="admin_login.html" style="font-size: 0.8em; color: var(--text-secondary);">Admin</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script src="js/main.js"></script>
+    <!-- Le script spécifique au checkout est conservé, mais la ligne pour current-year est gérée par main.js -->
+    <script>
+        // Basic checkout step navigation
+        document.addEventListener('DOMContentLoaded', () => {
+            const nextButtons = document.querySelectorAll('.next-step-button');
+            const prevButtons = document.querySelectorAll('.prev-step-button');
+            const steps = document.querySelectorAll('.checkout-step');
+
+            nextButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const currentStep = button.closest('.checkout-step');
+                    const nextStepId = button.dataset.next;
+                    if (currentStep && nextStepId) {
+                        currentStep.style.display = 'none';
+                        document.getElementById(nextStepId).style.display = 'block';
+                        window.scrollTo(0,0); // Scroll to top
+                    }
+                });
+            });
+
+            prevButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const currentStep = button.closest('.checkout-step');
+                    const prevStepId = button.dataset.prev;
+                    if (currentStep && prevStepId) {
+                        currentStep.style.display = 'none';
+                        document.getElementById(prevStepId).style.display = 'block';
+                        window.scrollTo(0,0); // Scroll to top
+                    }
+                });
+            });
+
+            // Toggle billing address fields
+            const sameAsShippingCheckbox = document.getElementById('same-as-shipping');
+            const billingAddressFields = document.getElementById('billing-address-fields');
+            if(sameAsShippingCheckbox && billingAddressFields){
+                sameAsShippingCheckbox.addEventListener('change', function() {
+                    billingAddressFields.style.display = this.checked ? 'none' : 'block';
+                });
+                 // Ensure correct initial state based on checkbox
+                billingAddressFields.style.display = sameAsShippingCheckbox.checked ? 'none' : 'block';
+            }
+        });
+    </script>
+</body>
+</html>
