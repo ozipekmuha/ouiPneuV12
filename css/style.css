@@ -5357,7 +5357,7 @@ select {
     .product-search-form input[type="search"], /* Product search on product list */
     .sort-options select /* Sort select on product list */
      {
-        font-size: 16px; /* Target 16px specifically. If still issues, !important might be needed but as last resort. */
+        font-size: 16px !important; /* Réintroduit !important pour éviter le zoom iOS, en espérant que cela ne casse pas l'ouverture des selects */
     }
 
     /* If the select padding was making them too small vertically, adjust here */
@@ -5367,4 +5367,167 @@ select {
         padding-bottom: 0.8rem;
         min-height: 44px; /* Common minimum touch target height */
     }
+}
+
+/* === Order Detail Modal Styles === */
+#order-detail-modal .modal-body {
+    font-size: 0.95rem; /* Base font size for modal content */
+}
+
+#order-detail-modal h4 { /* Titles like "Adresse de Livraison", "Articles Commandés" */
+    font-size: 1.15rem;
+    color: var(--accent-primary);
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--border-color);
+}
+#order-detail-modal h4:first-of-type {
+    margin-top: 0;
+}
+
+#order-detail-modal p {
+    margin-bottom: 0.6rem;
+    line-height: 1.5;
+}
+#order-detail-modal strong { /* For labels like "Date:", "Statut:" */
+    color: var(--text-light);
+    font-weight: var(--font-weight-medium);
+}
+
+/* Order Summary Table in Modal */
+.order-summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem; /* Slightly smaller font for table content */
+}
+
+.order-summary-table th,
+.order-summary-table td {
+    text-align: left;
+    padding: 0.75rem 0.5rem; /* More padding */
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+.order-summary-table th {
+    color: var(--text-light);
+    font-weight: var(--font-weight-semibold);
+    background-color: rgba(255,255,255,0.03); /* Subtle bg for header */
+    white-space: nowrap;
+}
+
+.order-summary-table td img {
+    max-width: 55px; /* Slightly larger image */
+    height: auto;
+    border-radius: var(--border-radius-small, 4px);
+    border: 1px solid var(--bg-dark); /* Dark border around image */
+}
+
+.order-summary-table .col-qty,
+.order-summary-table .col-price,
+.order-summary-table .col-total {
+    text-align: right;
+    white-space: nowrap;
+}
+.order-summary-table .col-image { width: 65px; text-align: center;}
+.order-summary-table .col-product { min-width: 150px; } /* Allow product name to wrap */
+.order-summary-table .text-muted {
+    font-size: 0.85em;
+    color: var(--text-secondary);
+}
+
+
+/* Responsive table for order summary in modal */
+@media (max-width: 767px) {
+    .order-summary-table thead {
+        display: none; /* Hide table header on mobile */
+    }
+    .order-summary-table tr {
+        display: block;
+        margin-bottom: 1.25rem; /* Space between "cards" */
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-small);
+        padding: 0.5rem;
+        background-color: var(--bg-dark); /* Background for each item block */
+    }
+    .order-summary-table td {
+        display: block;
+        text-align: right; /* Align content to the right */
+        padding: 0.6rem 0.5rem;
+        border-bottom: none; /* Remove individual cell bottom border */
+        position: relative; /* For data-label positioning */
+        font-size: 0.9rem;
+    }
+    .order-summary-table td:last-child {
+         border-bottom: 1px dashed rgba(var(--border-color-rgb, 51,51,51), 0.5); /* Lighter separator before next item */
+    }
+    .order-summary-table tr:last-child td:last-child {
+        border-bottom: none;
+    }
+
+    .order-summary-table td::before {
+        content: attr(data-label); /* Use data-label for pseudo-header */
+        float: left; /* Align label to the left */
+        font-weight: var(--font-weight-semibold);
+        color: var(--text-light);
+        margin-right: 1rem; /* Space between label and value */
+        white-space: nowrap;
+    }
+    .order-summary-table td[data-label="Image"] {
+        text-align: center; /* Center image */
+    }
+    .order-summary-table td[data-label="Image"]::before {
+        display: none; /* No label for image cell */
+    }
+    .order-summary-table td[data-label="Produit"] {
+        text-align: left; /* Product name left aligned */
+    }
+     .order-summary-table td[data-label="Produit"]::before {
+        display: none; /* No label for product cell itself, handled by main content */
+    }
+    .order-summary-table td[data-label="Produit"] small {
+        display: block;
+        text-align: left; /* Ensure small text is also left-aligned */
+        margin-top: 0.2rem;
+    }
+}
+
+
+/* Order Totals in Modal */
+.order-totals {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+.order-totals .summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+    font-size: 0.95rem;
+}
+.order-totals .summary-row span:first-child {
+    color: var(--text-secondary);
+}
+.order-totals .summary-row span:last-child {
+    color: var(--text-light);
+    font-weight: var(--font-weight-medium);
+}
+.order-totals .summary-row.reduction span:last-child {
+    color: #2ecc71; /* Green for reduction */
+}
+.order-totals .summary-divider-hr {
+    border: 0;
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 0.75rem 0;
+}
+.order-totals .grand-total {
+    font-size: 1.2rem;
+    font-weight: var(--font-weight-bold);
+    padding-top: 0.5rem;
+}
+.order-totals .grand-total span:last-child {
+    color: var(--accent-primary);
 }
