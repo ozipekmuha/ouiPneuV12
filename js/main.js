@@ -346,7 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const closeFiltersPanelButton = document.getElementById('close-filters-panel');
         const filtersPanel = document.getElementById('filters-panel');
         const filtersOverlay = document.getElementById('filters-overlay');
-        const applyFiltersAndCloseButton = document.getElementById('apply-filters-button');
+        // const applyFiltersAndCloseButton = document.getElementById('apply-filters-button'); // Déclaration redondante, déjà défini plus haut dans le scope de productFiltersForm
 
         function openFiltersPanel() {
             if (filtersPanel && filtersOverlay) {
