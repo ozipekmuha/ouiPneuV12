@@ -461,8 +461,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // === Address Modal JS ===
     const addressModalOverlay = document.getElementById('address-modal');
+    console.log('Address Modal Overlay Element:', addressModalOverlay); // DEBUG
     if (addressModalOverlay) {
+        console.log('Address modal overlay FOUND. Initializing address modal logic...'); // DEBUG
         const openModalButton = document.getElementById('add-new-address-button'); // Updated ID
+        console.log('Open Address Modal Button:', openModalButton); // DEBUG
         const closeModalButton = addressModalOverlay.querySelector('.modal-close-button');
         const cancelModalButton = addressModalOverlay.querySelector('.modal-cancel-button');
         const addressForm = document.getElementById('address-form');
@@ -1047,7 +1050,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // === Order Detail Modal (dashboard.php) ===
     const orderDetailModalOverlay = document.getElementById('order-detail-modal');
+    console.log('Order Detail Modal Overlay Element:', orderDetailModalOverlay); // DEBUG
     if (orderDetailModalOverlay) {
+        console.log('Order Detail modal overlay FOUND. Initializing order detail modal logic...'); // DEBUG
         const orderModalTitle = orderDetailModalOverlay.querySelector('#order-modal-title');
         const orderModalBodyContent = orderDetailModalOverlay.querySelector('#order-modal-body-content');
         const orderModalCloseButtons = orderDetailModalOverlay.querySelectorAll('.modal-close-button, .modal-cancel-button');
@@ -1153,14 +1158,17 @@ document.addEventListener('DOMContentLoaded', () => {
                             const orderData = JSON.parse(orderDataString);
                             openOrderDetailModal(orderData);
                         } else {
-                            console.error('Order data not found on view link.');
-                            orderModalBodyContent.innerHTML = "<p>Erreur: Données de la commande non trouvées.</p>";
-                            openOrderDetailModal({id_commande: 'Erreur'}); // Open modal with error
+                            console.error('Order data not found on view link (data-order-details attribute missing or empty).');
+                            // Optionnel: Afficher un message à l'utilisateur dans la modale si elle pouvait s'ouvrir partiellement
+                            // if(orderModalBodyContent) orderModalBodyContent.innerHTML = "<p>Erreur: Données de la commande non trouvées sur le lien.</p>";
+                            // openOrderDetailModal({id_commande: 'Erreur de données'});
                         }
                     } catch (e) {
-                        console.error('Error parsing order data:', e);
-                        orderModalBodyContent.innerHTML = "<p>Erreur: Impossible de lire les données de la commande.</p>";
-                        openOrderDetailModal({id_commande: 'Erreur'}); // Open modal with error
+                        console.error('Error parsing JSON from data-order-details:', e);
+                        console.error('Problematic JSON string:', orderDataString); // Log the problematic string
+                        // Optionnel: Afficher un message à l'utilisateur
+                        // if(orderModalBodyContent) orderModalBodyContent.innerHTML = "<p>Erreur: Impossible de lire les données de la commande (format JSON invalide).</p>";
+                        // openOrderDetailModal({id_commande: 'Erreur JSON'});
                     }
                 }
             });
