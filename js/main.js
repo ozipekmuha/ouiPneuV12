@@ -794,24 +794,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (quantityInputProductPage && minusBtnProduct && plusBtnProduct) {
                 function updateQuantityButtonsProductPage() {
-                    const currentValue = parseInt(quantityInputProductPage.value);
-                    const min = parseInt(quantityInputProductPage.min);
-                    const max = parseInt(quantityInputProductPage.max);
+                    const currentValue = parseInt(quantityInputProductPage.value || '1', 10);
+                    const min = parseInt(quantityInputProductPage.getAttribute('min') || '1', 10);
+                    const max = parseInt(quantityInputProductPage.getAttribute('max') || '10', 10);
                     minusBtnProduct.disabled = currentValue <= min;
                     plusBtnProduct.disabled = currentValue >= max;
                 }
 
                 minusBtnProduct.addEventListener('click', () => {
-                    let currentValue = parseInt(quantityInputProductPage.value);
-                    if (currentValue > parseInt(quantityInputProductPage.min)) {
+                    let currentValue = parseInt(quantityInputProductPage.value || '1', 10);
+                    const min = parseInt(quantityInputProductPage.getAttribute('min') || '1', 10);
+                    if (currentValue > min) {
                         quantityInputProductPage.value = currentValue - 1;
                         updateQuantityButtonsProductPage();
                     }
                 });
 
                 plusBtnProduct.addEventListener('click', () => {
-                    let currentValue = parseInt(quantityInputProductPage.value);
-                    if (currentValue < parseInt(quantityInputProductPage.max)) {
+                    let currentValue = parseInt(quantityInputProductPage.value || '1', 10);
+                    const max = parseInt(quantityInputProductPage.getAttribute('max') || '10', 10);
+                    if (currentValue < max) {
                         quantityInputProductPage.value = currentValue + 1;
                         updateQuantityButtonsProductPage();
                     }

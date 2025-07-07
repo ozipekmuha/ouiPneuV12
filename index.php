@@ -97,7 +97,7 @@ try {
     </header>
 
     <div id="global-promo-banner" style="background-color: var(--accent-primary); color: var(--text-on-accent); text-align: center; padding: 0.75rem 1rem; font-size: 0.9rem; font-weight: 500;">
-        <p style="margin:0;">🔥 Livraison Gratuite sur toutes les commandes de plus de 150€ ! 🔥</p>
+        <p style="margin:0; color: black;">🔥 Livraison Gratuite sur toutes les commandes ! 🔥</p>
     </div>
 <!-- 
     <section id="home" class="hero-section section-padding">
@@ -331,6 +331,12 @@ try {
                     Nous collaborons avec les plus grandes marques de pneumatiques pour vous garantir qualité, sécurité et performance. Classées par gamme pour répondre à tous vos besoins.
                 </p>
 
+                <style>
+                    .swiper-slide brand-card, .swiper-slide-active{
+
+                        margin: 0 !important;
+                    }
+                </style>
                 <div class="brand-tier" data-aos="fade-up" data-aos-delay="200">
                     <h3 class="brand-tier-title">Premium</h3>
                     <div class="swiper brand-swiper">
@@ -348,6 +354,9 @@ try {
                                 <span>Bridgestone</span>
                             </div>
                         </div>
+                        <div class="swiper-pagination"></div>
+                        <div class="swiper-button-prev"></div>
+                        <div class="swiper-button-next"></div>
                     </div>
                 </div>
 
@@ -368,6 +377,9 @@ try {
                                 <span>Hankook</span>
                             </div>
                         </div>
+                        <div class="swiper-pagination"></div>
+                        <div class="swiper-button-prev"></div>
+                        <div class="swiper-button-next"></div>
                     </div>
                 </div>
 
@@ -388,6 +400,9 @@ try {
                                 <span>Kumho</span>
                             </div>
                         </div>
+                        <div class="swiper-pagination"></div>
+                        <div class="swiper-button-prev"></div>
+                        <div class="swiper-button-next"></div>
                     </div>
                 </div>
             </div>
@@ -607,13 +622,21 @@ try {
       new Swiper(container, {
         slidesPerView: 1,
         spaceBetween: 20,
+        loop: true,
+        autoplay: { delay: 2500, disableOnInteraction: false },
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        },
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true,
+        },
         breakpoints: {
           576: { slidesPerView: 2 },
           768: { slidesPerView: 3 },
-          1024: { slidesPerView: 4 }
+          1024: { slidesPerView: 4 },
         },
-        loop: true,
-        autoplay: { delay: 2500, disableOnInteraction: false }
       });
     });
   });
