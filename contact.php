@@ -105,14 +105,14 @@ $header_cart_count = array_sum($_SESSION['panier'] ?? []);
                                 <i class="fas fa-map-marker-alt contact-icon"></i>
                                 <div>
                                     <strong>Adresse :</strong>
-                                    <p>123 Rue du Pneu, 75000 Pneuhouse, France</p>
+                                    <p>5 All. du Breuil, 54700 Pont-à-Mousson</p>
                                 </div>
                             </li>
                             <li>
                                 <i class="fas fa-phone-alt contact-icon"></i>
                                 <div>
                                     <strong>Téléphone :</strong>
-                                    <p><a href="tel:+33123456789">+33 1 23 45 67 89</a></p>
+                                    <p><a href="tel:+33612912648">06 12 91 26 48</a></p>
                                 </div>
                             </li>
                             <li>
@@ -131,7 +131,7 @@ $header_cart_count = array_sum($_SESSION['panier'] ?? []);
                                 </div>
                             </li>
                         </ul>
-                         <div id="contact-map-placeholder" style="height: 250px; background-color: var(--bg-dark); border-radius: var(--border-radius-medium); margin-top:1.5rem; display:flex; align-items:center; justify-content:center; color: var(--text-secondary);"><i>Carte interactive (placeholder)</i></div>
+                         <div id="contact-map-placeholder" style="height: 250px; background-color: var(--bg-dark); border-radius: var(--border-radius-medium); margin-top:1.5rem; display:flex; align-items:center; justify-content:center; color: var(--text-secondary);"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2621.809999663384!2d6.0610344!3d48.919012099999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4794c7cdaa267e09%3A0x336bf54067e9462a!2sOUI%20PNEU!5e0!3m2!1sfr!2sfr!4v1751906947064!5m2!1sfr!2sfr" width="100%" height="260" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
                     </div>
                 </div>
             </div>
