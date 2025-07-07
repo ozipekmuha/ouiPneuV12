@@ -1883,6 +1883,8 @@ a:hover, a:focus {
         z-index: 1005; /* Au-dessus du contenu, le bouton hamburger sera au-dessus (1010) */
         align-items: flex-start;
         gap: 1rem;
+        margin-bottom: 0 !important;
+
     }
     #main-nav-links.is-active {
         left: 0; /* Afficher le panneau */
@@ -5615,3 +5617,7 @@ select {
         align-self: anchor-center !important;
     justify-self: anchor-center !important;
 }
+
+ #main-nav-links { /* Main navigation links */
+   margin: 0 !important;
+ }
