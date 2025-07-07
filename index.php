@@ -336,15 +336,15 @@ try {
                     <div class="swiper brand-swiper">
                         <div class="swiper-wrapper">
                             <div class="swiper-slide brand-card">
-                                <img src="https://via.placeholder.com/160x60?text=Logo" alt="Michelin" loading="lazy">
+                                <img src="./assets/images/icone/michelin.png" alt="Michelin" loading="lazy">
                                 <span>Michelin</span>
                             </div>
                             <div class="swiper-slide brand-card">
-                                <img src="https://via.placeholder.com/160x60?text=Logo" alt="Continental" loading="lazy">
+                                <img src="./assets/images/icone/continental.png" alt="Continental" loading="lazy">
                                 <span>Continental</span>
                             </div>
                             <div class="swiper-slide brand-card">
-                                <img src="https://via.placeholder.com/160x60?text=Logo" alt="Bridgestone" loading="lazy">
+                                <img src="./assets/images/icone/bridgeston.webp" alt="Bridgestone" loading="lazy">
                                 <span>Bridgestone</span>
                             </div>
                         </div>
@@ -356,15 +356,15 @@ try {
                     <div class="swiper brand-swiper">
                         <div class="swiper-wrapper">
                             <div class="swiper-slide brand-card">
-                                <img src="https://via.placeholder.com/160x60?text=Logo" alt="Goodyear" loading="lazy">
+                                <img src="./assets/images/icone/goodyear.png" alt="Goodyear" loading="lazy">
                                 <span>Goodyear</span>
                             </div>
                             <div class="swiper-slide brand-card">
-                                <img src="https://via.placeholder.com/160x60?text=Logo" alt="Dunlop" loading="lazy">
+                                <img src="./assets/images/icone/dunlop2.png" alt="Dunlop" loading="lazy">
                                 <span>Dunlop</span>
                             </div>
                             <div class="swiper-slide brand-card">
-                                <img src="https://via.placeholder.com/160x60?text=Logo" alt="Hankook" loading="lazy">
+                                <img src="./assets/images/icone/kanhook.webp" alt="Hankook" loading="lazy">
                                 <span>Hankook</span>
                             </div>
                         </div>
@@ -376,16 +376,16 @@ try {
                     <div class="swiper brand-swiper">
                         <div class="swiper-wrapper">
                             <div class="swiper-slide brand-card">
-                                <img src="https://via.placeholder.com/160x60?text=Logo" alt="Nexen" loading="lazy">
+                                <img src="./assets/images/icone/nexen.png" alt="Nexen" loading="lazy">
                                 <span>Nexen</span>
                             </div>
                             <div class="swiper-slide brand-card">
-                                <img src="https://via.placeholder.com/160x60?text=Logo" alt="Kumho" loading="lazy">
+                                <img src="./assets/images/icone/kuhmo.png" alt="Kumho" loading="lazy">
                                 <span>Kumho</span>
                             </div>
                             <div class="swiper-slide brand-card">
-                                <img src="https://via.placeholder.com/160x60?text=Logo" alt="Federal" loading="lazy">
-                                <span>Federal</span>
+                                <img src="./assets/images/icone/kuhmo.png" alt="Kumho" loading="lazy">
+                                <span>Kumho</span>
                             </div>
                         </div>
                     </div>

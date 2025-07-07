@@ -3,7 +3,7 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 require_once 'includes/functions.php'; // For sanitize_html_output, if used, and for consistency
-// require_once 'includes/db_connect.php'; // Only if DB interaction is needed on this page directly
+require_once 'includes/db_connect.php'; // Only if DB interaction is needed on this page directly
 
 $page_title = "Contactez-Nous - Ouipneu.fr";
 $header_cart_count = array_sum($_SESSION['panier'] ?? []);
@@ -25,7 +25,7 @@ $header_cart_count = array_sum($_SESSION['panier'] ?? []);
     <header id="main-header">
         <div class="container">
             <div class="logo">
-                <a href="index.php"><img src="images/logo-placeholder-dark.png" alt="Logo Ouipneu.fr"></a>
+                 <a href="index.php"><img src="./assets/images/logobg.png" alt="Logo Ouipneu.fr"></a>
             </div>
             <nav class="main-nav">
                 <ul id="main-nav-links">

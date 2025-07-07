@@ -154,7 +154,7 @@ $total_panier = $sous_total_panier + $frais_port;
     <header id="main-header">
         <div class="container">
             <div class="logo">
-                <a href="index.php"><img src="images/logo-placeholder-dark.png" alt="Logo Ouipneu.fr"></a>
+                <a href="index.php"><img src="./assets/images/logobg.png" alt="Logo Ouipneu.fr"></a>
             </div>
             <nav class="main-nav">
                 <ul id="main-nav-links">

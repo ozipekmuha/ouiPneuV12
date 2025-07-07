@@ -1475,7 +1475,7 @@ a:hover, a:focus {
 
 .our-advantages-section .section-intro {
     text-align: center;
-    max-width: 800px;
+     max-width: 800px;
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 3rem; /* Space before the grid */
@@ -3788,6 +3788,13 @@ a:hover, a:focus {
     transition: opacity 0.3s ease, visibility 0s 0.3s linear; /* Delay visibility transition */
 }
 
+.modal-overlay.is-visible .modal-container {
+    transform: scale(1);
+    opacity: 1;
+    visibility: visible;
+    transition: transform 0.3s ease, opacity 0.2s ease; /* Slightly faster opacity */
+}
+
 .modal-overlay.is-visible {
     opacity: 1;
     visibility: visible;
@@ -3799,26 +3806,20 @@ a:hover, a:focus {
     padding: 2rem;
     border-radius: var(--border-radius-large, 10px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    width: 90%;
-    max-width: 650px; /* Max width for the modal */
-    max-height: 90vh; /* Max height */
+    width: 100%; /* Takes full width of its flex item container (which is centered by overlay) */
+    max-width: 650px; /* Default max-width */
+    max-height: 90vh;
     display: flex;
     flex-direction: column;
     transform: scale(0.95);
-    transition: transform 0.3s ease;
-    opacity: 0; /* For fade-in effect with scale */
+    transition: transform 0.3s ease, opacity 0.2s ease; /* Combined transitions */
+    opacity: 0;
     visibility: hidden;
-        margin: auto;
-    max-height: 90vh;
-    overflow-y: auto;
+    /* margin: auto; /* Removed as flex parent handles centering */
+    overflow-y: auto; /* Allows modal content to scroll */
 }
 
-.modal-overlay.is-visible .modal-container {
-    transform: scale(1);
-    opacity: 1;
-    visibility: visible;
-    transition: transform 0.3s ease, opacity 0.2s ease; /* Slightly faster opacity */
-}
+
 
 
 .modal-header {
@@ -4490,7 +4491,7 @@ a:hover, a:focus {
     text-align: center;
 }
 .static-page-content {
-    max-width: 800px; 
+     max-width: 800px; 
     margin: 0 auto; 
     background-color: var(--bg-surface); 
     padding: 2rem;
@@ -5533,31 +5534,6 @@ select {
 .order-totals .grand-total span:last-child {
     color: var(--accent-primary);
 }
-/* === STYLES MODALES (depuis styletest.css) === */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.65);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-      min-height: 100vh;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0s 0.3s linear;
-}
-
-.modal-overlay.is-visible {
-    opacity: 1;
-    visibility: visible;
-    transition: opacity 0.3s ease, visibility 0s 0s linear;
-}
 
 .modal-container {
     background-color: var(--bg-surface);
@@ -5578,12 +5554,6 @@ select {
     overflow-y: auto;
 }
 
-.modal-overlay.is-visible .modal-container {
-    transform: scale(1);
-    opacity: 1;
-    visibility: visible;
-    transition: transform 0.3s ease, opacity 0.2s ease;
-}
 
 .modal-header {
     display: flex;
@@ -5639,3 +5609,9 @@ select {
 }
 /* === Modal Overlay and Container === */
 
+
+
+.modal-container{
+        align-self: anchor-center !important;
+    justify-self: anchor-center !important;
+}

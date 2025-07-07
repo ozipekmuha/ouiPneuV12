@@ -66,7 +66,7 @@ $user_prenom = $_SESSION['prenom_utilisateur'] ?? '';
 <body>
     <header id="main-header">
         <div class="container">
-            <div class="logo"><a href="index.php"><img src="images/logo-placeholder-dark.png" alt="Logo Ouipneu.fr"></a></div>
+            <div class="logo"><a href="index.php"><img src="./assets/images/logobg.png" alt="Logo Ouipneu.fr"></a></div>
             <nav class="main-nav">
                 <ul id="main-nav-links">
                     <li><a href="index.php">Accueil</a></li>
