@@ -187,7 +187,7 @@ $header_cart_count = array_sum($_SESSION['panier'] ?? []);
     <main class="site-main-content">
         <section id="register-section" class="section-padding auth-section">
             <div class="container">
-                <div class="auth-container" data-aos="fade-up">
+                <div class="auth-container" style="justify-self: center;" data-aos="fade-up">
                     <h1 class="page-title auth-title">Créer un compte</h1>
 
                     <?php if (!empty($errors)): ?>
