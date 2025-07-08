@@ -19,10 +19,10 @@
             </div>
             <nav class="main-nav">
                 <ul id="main-nav-links">
-                    <li><a href="index.html" aria-label="Accueil">Accueil</a></li>
-                    <li><a href="produits.html" aria-label="Nos Pneus">Nos Pneus</a></li>
-                    <li><a href="contact.html" aria-label="Contact">Contact</a></li>
-                    <li><a href="index.html#about-us" aria-label="À propos de nous">À Propos</a></li>
+                    <li><a href="index.php" aria-label="Accueil">Accueil</a></li>
+                    <li><a href="produits.php" aria-label="Nos Pneus">Nos Pneus</a></li>
+                    <li><a href="contact.php" aria-label="Contact">Contact</a></li>
+                    <li><a href="index.php#about-us" aria-label="À propos de nous">À Propos</a></li>
                 </ul>
             </nav>
             <div class="header-actions">
@@ -148,19 +148,19 @@
                 <div class="footer-column">
                     <h3>Navigation</h3>
                     <ul>
-                        <li><a href="index.html">Accueil</a></li>
-                        <li><a href="produits.html">Produits</a></li>
-                        <li><a href="index.html#promotions">Promotions</a></li> <!-- Garder le lien vers la section pour l'instant -->
-                        <li><a href="contact.html">Contactez-nous</a></li>
+                        <li><a href="index.php">Accueil</a></li>
+                        <li><a href="produits.php">Produits</a></li>
+                        <li><a href="index.php#promotions">Promotions</a></li> <!-- Garder le lien vers la section pour l'instant -->
+                        <li><a href="contact.php">Contactez-nous</a></li>
                         <li><a href="dashboard.html">Mon Compte</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
                     <h3>Informations</h3>
                     <ul>
-                        <li><a href="legal-notice.html">Mentions Légales</a></li>
-                        <li><a href="privacy-policy.html">Politique de Confidentialité</a></li>
-                        <li><a href="cgv.html">Conditions Générales de Vente</a></li>
+                        <li><a href="legal-notice.php">Mentions Légales</a></li>
+                        <li><a href="privacy-policy.php">Politique de Confidentialité</a></li>
+                        <li><a href="cgv.php">Conditions Générales de Vente</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">

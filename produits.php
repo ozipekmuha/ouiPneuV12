@@ -404,9 +404,9 @@ try {
                 <div class="footer-column">
                     <h3>Informations</h3>
                     <ul>
-                        <li><a href="legal-notice.html">Mentions Légales</a></li>
-                        <li><a href="privacy-policy.html">Politique de Confidentialité</a></li>
-                        <li><a href="cgv.html">Conditions Générales de Vente</a></li>
+                        <li><a href="legal-notice.php">Mentions Légales</a></li>
+                        <li><a href="privacy-policy.php">Politique de Confidentialité</a></li>
+                        <li><a href="cgv.php">Conditions Générales de Vente</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">

@@ -19,10 +19,10 @@
             </div>
             <nav class="main-nav">
                 <ul id="main-nav-links">
-                    <li><a href="index.html" aria-label="Accueil">Accueil</a></li>
-                    <li><a href="produits.html" aria-label="Nos Pneus">Nos Pneus</a></li>
-                    <li><a href="contact.html" aria-label="Contact">Contact</a></li>
-                    <li><a href="index.html#about-us" aria-label="À propos de nous">À Propos</a></li>
+                    <li><a href="index.php" aria-label="Accueil">Accueil</a></li>
+                    <li><a href="produits.php" aria-label="Nos Pneus">Nos Pneus</a></li>
+                    <li><a href="contact.php" aria-label="Contact">Contact</a></li>
+                    <li><a href="index.php#about-us" aria-label="À propos de nous">À Propos</a></li>
                 </ul>
             </nav>
             <div class="header-actions">
@@ -99,7 +99,7 @@
                     <p>Tous les éléments du site Ouipneu.fr sont et restent la propriété intellectuelle et exclusive de Ouipneu SAS. Personne n’est autorisé à reproduire, exploiter, ou utiliser à quelque titre que ce soit, même partiellement, des éléments du site qu’ils soient sous forme de photo, logo, visuel ou texte.</p>
 
                     <h2>Article 11 – Données à caractère personnel</h2>
-                    <p>Ouipneu SAS s'engage à préserver la confidentialité des informations fournies par l’Acheteur, qu'il serait amené à transmettre pour l'utilisation de certains services. Toute information le concernant est soumise aux dispositions de la loi n° 78-17 du 6 janvier 1978. À ce titre, l'internaute dispose d'un droit d'accès, de modification et de suppression des informations le concernant. Il peut en faire la demande à tout moment par courrier à l'adresse suivante : Ouipneu SAS, 123 Rue du Pneu, 75000 Pneuhouse, France, ou par email à <a href="mailto:privacy@ouipneu.fr">privacy@ouipneu.fr</a>. Pour plus de détails, veuillez consulter notre <a href="privacy-policy.html">Politique de Confidentialité</a>.</p>
+                    <p>Ouipneu SAS s'engage à préserver la confidentialité des informations fournies par l’Acheteur, qu'il serait amené à transmettre pour l'utilisation de certains services. Toute information le concernant est soumise aux dispositions de la loi n° 78-17 du 6 janvier 1978. À ce titre, l'internaute dispose d'un droit d'accès, de modification et de suppression des informations le concernant. Il peut en faire la demande à tout moment par courrier à l'adresse suivante : Ouipneu SAS, 123 Rue du Pneu, 75000 Pneuhouse, France, ou par email à <a href="mailto:privacy@ouipneu.fr">privacy@ouipneu.fr</a>. Pour plus de détails, veuillez consulter notre <a href="privacy-policy.php">Politique de Confidentialité</a>.</p>
 
                     <h2>Article 12 – Règlement des litiges</h2>
                     <p>Les présentes conditions de vente à distance sont soumises à la loi française. Pour tous litiges ou contentieux, le Tribunal compétent sera celui du lieu de domicile du défendeur ou, au choix du demandeur, du lieu de livraison effective du produit.</p>
@@ -119,19 +119,19 @@
                 <div class="footer-column">
                     <h3>Navigation</h3>
                     <ul>
-                        <li><a href="index.html">Accueil</a></li>
-                        <li><a href="produits.html">Produits</a></li>
-                        <li><a href="index.html#promotions">Promotions</a></li> <!-- Garder le lien vers la section pour l'instant -->
-                        <li><a href="contact.html">Contactez-nous</a></li>
+                        <li><a href="index.php">Accueil</a></li>
+                        <li><a href="produits.php">Produits</a></li>
+                        <li><a href="index.php#promotions">Promotions</a></li> <!-- Garder le lien vers la section pour l'instant -->
+                        <li><a href="contact.php">Contactez-nous</a></li>
                         <li><a href="dashboard.html">Mon Compte</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
                     <h3>Informations</h3>
                     <ul>
-                        <li><a href="legal-notice.html">Mentions Légales</a></li>
-                        <li><a href="privacy-policy.html">Politique de Confidentialité</a></li>
-                        <li><a href="cgv.html">Conditions Générales de Vente</a></li>
+                        <li><a href="legal-notice.php">Mentions Légales</a></li>
+                        <li><a href="privacy-policy.php">Politique de Confidentialité</a></li>
+                        <li><a href="cgv.php">Conditions Générales de Vente</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">

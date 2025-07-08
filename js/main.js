@@ -414,7 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
         //     }
         // }
 
-        // === Product Sorting Logic (produits.html) ===
+        // === Product Sorting Logic (produits.php) ===
         const sortBySelect = document.getElementById('sort-by');
         if (sortBySelect && productGrid) {
             sortBySelect.addEventListener('change', (event) => {
@@ -732,7 +732,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    // === Accordion Functionality (produit.html) ===
+    // === Accordion Functionality (produit.php) ===
     const accordionItems = document.querySelectorAll('.accordion-item');
     if (accordionItems.length > 0) {
         accordionItems.forEach(item => {
@@ -767,7 +767,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // === Product Image Gallery (produit.html) ===
+    // === Product Image Gallery (produit.php) ===
     const mainProductImage = document.getElementById('main-product-image');
     const thumbnailImages = document.querySelectorAll('.thumbnail-image');
 

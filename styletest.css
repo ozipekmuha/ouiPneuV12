@@ -136,7 +136,7 @@
     display: none !important;
 }
 
-/* === Styling for produits.html specific elements === */
+/* === Styling for produits.php specific elements === */
 /* Optional: If product page title needs specific adjustments */
 .all-products-section .section-title {
     margin-top: 1rem; /* Example: Adjust top margin if header is tall */
@@ -144,7 +144,7 @@
     /* font-size: 2.8rem; /* Optional: Slightly larger page title */
 }
 
-/* Ensuring product image placeholder within cards on produits.html is consistent */
+/* Ensuring product image placeholder within cards on produits.php is consistent */
 /* This rule should already exist or be similar if using common .product-card structure */
 .product-card .product-image-placeholder {
     width: 100%;
@@ -170,7 +170,7 @@
     margin-bottom: 2rem; /* Marge inférieure ajoutée/ajustée */
 }
 
-/* === Quick Filter Form (index.html) === */
+/* === Quick Filter Form (index.php) === */
 #quick-filter-section {
     background-color: var(--bg-surface); /* Ou une autre couleur si besoin de démarquer */
 }
@@ -2846,7 +2846,7 @@ a:hover, a:focus {
 
 /* === Responsive Product Filters === */
 
-/* Styles for Off-Canvas Filter Panel (produits.html) */
+/* Styles for Off-Canvas Filter Panel (produits.php) */
 .product-search-and-filter-bar {
     display: flex;
     flex-wrap: wrap;
@@ -4580,7 +4580,7 @@ a:hover, a:focus {
     font-size: 0.9rem;
 }
 
-/* === Styles pour la Page Détail Produit (produit.html) - Thème Sombre === */
+/* === Styles pour la Page Détail Produit (produit.php) - Thème Sombre === */
 
 #product-detail-section .product-detail-layout {
     gap: 2rem; /* Espacement initial pour mobile */

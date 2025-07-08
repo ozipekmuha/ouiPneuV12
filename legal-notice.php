@@ -20,10 +20,10 @@
             </div>
             <nav class="main-nav">
                 <ul id="main-nav-links">
-                    <li><a href="index.html" aria-label="Accueil">Accueil</a></li>
-                    <li><a href="produits.html" aria-label="Nos Pneus">Nos Pneus</a></li>
-                    <li><a href="contact.html" aria-label="Contact">Contact</a></li>
-                    <li><a href="index.html#about-us" aria-label="À propos de nous">À Propos</a></li>
+                    <li><a href="index.php" aria-label="Accueil">Accueil</a></li>
+                    <li><a href="produits.php" aria-label="Nos Pneus">Nos Pneus</a></li>
+                    <li><a href="contact.php" aria-label="Contact">Contact</a></li>
+                    <li><a href="index.php#about-us" aria-label="À propos de nous">À Propos</a></li>
                 </ul>
             </nav>
             <div class="header-actions">
@@ -74,11 +74,11 @@
 
                     <h2>Données Personnelles</h2>
                     <p>Les informations recueillies font l’objet d’un traitement informatique destiné à la gestion des commandes et des relations commerciales. Conformément à la loi "Informatique et Libertés" du 6 janvier 1978 modifiée et au Règlement Général sur la Protection des Données (RGPD), vous bénéficiez d’un droit d’accès, de rectification, de suppression des informations qui vous concernent, que vous pouvez exercer en vous adressant à <a href="mailto:privacy@ouipneu.fr">privacy@ouipneu.fr</a>.</p>
-                    <p>Pour plus d'informations, veuillez consulter notre <a href="privacy-policy.html">Politique de Confidentialité</a>.</p>
+                    <p>Pour plus d'informations, veuillez consulter notre <a href="privacy-policy.php">Politique de Confidentialité</a>.</p>
 
                     <h2>Cookies</h2>
                     <p>Le site Ouipneu.fr peut être amené à vous demander l’acceptation des cookies pour des besoins de statistiques et d'affichage. Un cookie est une information déposée sur votre disque dur par le serveur du site que vous visitez.</p>
-                    <p>Pour en savoir plus sur notre utilisation des cookies, veuillez consulter notre <a href="privacy-policy.html#cookies">section Cookies dans la Politique de Confidentialité</a>.</p>
+                    <p>Pour en savoir plus sur notre utilisation des cookies, veuillez consulter notre <a href="privacy-policy.php#cookies">section Cookies dans la Politique de Confidentialité</a>.</p>
 
                     <h2>Limitation de responsabilité</h2>
                     <p>Ouipneu SAS s'efforce d'assurer au mieux de ses possibilités, l'exactitude et la mise à jour des informations diffusées sur ce site, dont elle se réserve le droit de corriger, à tout moment et sans préavis, le contenu. Toutefois, Ouipneu SAS ne peut garantir l'exactitude, la précision ou l'exhaustivité des informations mises à la disposition sur ce site.</p>
@@ -97,19 +97,19 @@
                 <div class="footer-column">
                     <h3>Navigation</h3>
                     <ul>
-                        <li><a href="index.html">Accueil</a></li>
-                        <li><a href="produits.html">Produits</a></li>
-                        <li><a href="index.html#promotions">Promotions</a></li> <!-- Garder le lien vers la section pour l'instant -->
-                        <li><a href="contact.html">Contactez-nous</a></li>
+                        <li><a href="index.php">Accueil</a></li>
+                        <li><a href="produits.php">Produits</a></li>
+                        <li><a href="index.php#promotions">Promotions</a></li> <!-- Garder le lien vers la section pour l'instant -->
+                        <li><a href="contact.php">Contactez-nous</a></li>
                         <li><a href="dashboard.html">Mon Compte</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
                     <h3>Informations</h3>
                     <ul>
-                        <li><a href="legal-notice.html">Mentions Légales</a></li>
-                        <li><a href="privacy-policy.html">Politique de Confidentialité</a></li>
-                        <li><a href="cgv.html">Conditions Générales de Vente</a></li>
+                        <li><a href="legal-notice.php">Mentions Légales</a></li>
+                        <li><a href="privacy-policy.php">Politique de Confidentialité</a></li>
+                        <li><a href="cgv.php">Conditions Générales de Vente</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
