@@ -442,7 +442,47 @@ $header_cart_count = array_sum($_SESSION['panier'] ?? []);
         </section>
     </main>
 
-    <footer id="main-footer"><!-- ... Footer HTML ... --></footer>
+    <footer id="main-footer">
+        <div class="container">
+            <div class="footer-columns">
+                <div class="footer-column">
+                    <h3>Ouipneu.fr</h3>
+                    <p>Votre partenaire de confiance pour des pneus premium, un montage expert et un service client exceptionnel.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Navigation</h3>
+                    <ul>
+                        <li><a href="index.php">Accueil</a></li>
+                        <li><a href="produits.php">Produits</a></li>
+                        <li><a href="index.php#promotions">Promotions</a></li>
+                        <li><a href="contact.php">Contactez-nous</a></li>
+                        <li><a href="dashboard.php">Mon Compte</a></li>
+                        <li><a href="devenir_partenaire.php">Devenir Garage Partenaire</a></li>
+                        <li><a href="nos_garages_partenaires.php">Nos Garages Partenaires</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Informations</h3>
+                    <ul>
+                        <li><a href="legal-notice.php">Mentions Légales</a></li>
+                        <li><a href="privacy-policy.php">Politique de Confidentialité</a></li>
+                        <li><a href="cgv.php">Conditions Générales de Vente</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Suivez-Nous</h3>
+                    <div class="social-icons">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="current-year"><?php echo date('Y'); ?></span> Ouipneu.fr. Tous droits réservés. <span style="margin-left: 10px;">|</span> <a href="admin_login.php" style="font-size: 0.8em; color: var(--text-secondary);">Admin</a></p>
+            </div>
+        </div>
+    </footer>
 
     <!-- Address Modal HTML moved here, just before closing </body> -->
     <div id="address-modal" class="modal-overlay" style="display: none;">

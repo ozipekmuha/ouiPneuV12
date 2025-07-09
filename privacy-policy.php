@@ -153,6 +153,8 @@
                         <li><a href="index.php#promotions">Promotions</a></li> <!-- Garder le lien vers la section pour l'instant -->
                         <li><a href="contact.php">Contactez-nous</a></li>
                         <li><a href="dashboard.html">Mon Compte</a></li>
+                        <li><a href="devenir_partenaire.php">Devenir Garage Partenaire</a></li>
+                        <li><a href="nos_garages_partenaires.php">Nos Garages Partenaires</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">

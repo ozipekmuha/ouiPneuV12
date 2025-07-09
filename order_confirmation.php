@@ -113,11 +113,11 @@ $user_prenom = $_SESSION['prenom_utilisateur'] ?? '';
         <div class="container">
             <div class="footer-columns">
                 <div class="footer-column"><h3>Ouipneu.fr</h3><p>Votre partenaire de confiance...</p></div>
-                <div class="footer-column"><h3>Navigation</h3><ul><li><a href="index.php">Accueil</a></li><li><a href="produits.php">Produits</a></li><li><a href="contact.php">Contact</a></li><li><a href="<?php echo isset($_SESSION['id_utilisateur']) ? 'dashboard.php' : 'login.php'; ?>">Mon Compte</a></li></ul></div>
+                <div class="footer-column"><h3>Navigation</h3><ul><li><a href="index.php">Accueil</a></li><li><a href="produits.php">Produits</a></li><li><a href="contact.php">Contact</a></li><li><a href="<?php echo isset($_SESSION['id_utilisateur']) ? 'dashboard.php' : 'login.php'; ?>">Mon Compte</a></li><li><a href="devenir_partenaire.php">Devenir Garage Partenaire</a></li><li><a href="nos_garages_partenaires.php">Nos Garages Partenaires</a></li></ul></div>
                 <div class="footer-column"><h3>Informations</h3><ul><li><a href="legal-notice.php">Mentions Légales</a></li><li><a href="privacy-policy.php">Politique de Confidentialité</a></li><li><a href="cgv.php">CGV</a></li></ul></div>
                 <div class="footer-column"><h3>Suivez-Nous</h3><div class="social-icons"><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-twitter"></i></a><a href="#"><i class="fab fa-instagram"></i></a></div></div>
             </div>
-            <div class="footer-bottom"><p>&copy; <?php echo date('Y'); ?> Ouipneu.fr. Tous droits réservés. | <a href="admin_login.html">Admin</a></p></div>
+            <div class="footer-bottom"><p>&copy; <?php echo date('Y'); ?> Ouipneu.fr. Tous droits réservés. | <a href="admin_login.php">Admin</a></p></div>
         </div>
     </footer>
 

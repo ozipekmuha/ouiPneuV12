@@ -204,6 +204,8 @@ $header_cart_count = array_sum($_SESSION['panier'] ?? []);
                         <li><a href="index.php#promotions">Promotions</a></li>
                         <li><a href="contact.php">Contactez-nous</a></li>
                         <li><a href="<?php echo isset($_SESSION['id_utilisateur']) ? 'dashboard.php' : 'login.php'; ?>">Mon Compte</a></li>
+                        <li><a href="devenir_partenaire.php">Devenir Garage Partenaire</a></li>
+                        <li><a href="nos_garages_partenaires.php">Nos Garages Partenaires</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
