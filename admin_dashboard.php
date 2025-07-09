@@ -17,6 +17,38 @@ if (empty($_SESSION['csrf_token'])) {
 }
 $csrf_token = $_SESSION['csrf_token'];
 
+// --- Chargement des paramètres ---
+$settings_file = 'config/settings.json';
+$settings = []; // Initialiser avec des valeurs par défaut au cas où le fichier n'existe pas ou une clé manque
+$default_settings = [
+    'admin_firstname' => '',
+    'admin_name' => '',
+    'admin_email' => '',
+    'stripe_pk' => '',
+    'stripe_sk' => '',
+    'carriers' => [['name' => '', 'price' => '', 'delay' => '']] // Assurer au moins un transporteur vide
+];
+
+if (file_exists($settings_file)) {
+    $settings_json = file_get_contents($settings_file);
+    $loaded_settings = json_decode($settings_json, true);
+    if ($loaded_settings !== null) {
+        // Fusionner avec les défauts pour s'assurer que toutes les clés attendues existent
+        $settings = array_merge($default_settings, $loaded_settings);
+    } else {
+        $settings = $default_settings; // Fichier JSON corrompu, utiliser les défauts
+        error_log("Erreur de décodage JSON dans $settings_file");
+    }
+} else {
+    $settings = $default_settings; // Fichier non trouvé, utiliser les défauts
+}
+
+// S'assurer que les transporteurs existent comme un tableau et qu'il y a au moins un élément
+if (!isset($settings['carriers']) || !is_array($settings['carriers']) || empty($settings['carriers'])) {
+    $settings['carriers'] = [['name' => '', 'price' => '', 'delay' => '']];
+}
+
+
 // Traitement des actions POST
 $admin_message_display = null;
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
@@ -56,6 +88,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
                     $_SESSION['admin_message'] = ['type' => 'error', 'text' => "Erreur base de données approbation: " . $e->getMessage()];
                 }
             }
+            header("Location: admin_dashboard.php#admin-garages-section");
+            exit;
         } elseif ($_POST['action'] == 'reject_candidature_garage' && isset($_POST['id_candidat_garage'])) {
             $id_candidat = (int)$_POST['id_candidat_garage'];
             try {
@@ -67,6 +101,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
                 error_log("Erreur reject_candidature_garage: " . $e->getMessage());
                 $_SESSION['admin_message'] = ['type' => 'error', 'text' => "Erreur base de données rejet."];
             }
+            header("Location: admin_dashboard.php#admin-garages-section");
+            exit;
         } elseif ($_POST['action'] == 'update_partenaire_garage' && isset($_POST['id_garage_modal'])) {
             $id_garage = (int)$_POST['id_garage_modal'];
             $nom_garage = trim($_POST['nom_garage_modal']);
@@ -94,6 +130,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
                     $_SESSION['admin_message'] = ['type' => 'error', 'text' => "Erreur base de données mise à jour partenaire."];
                 }
             }
+            header("Location: admin_dashboard.php#admin-garages-section");
+            exit;
         } elseif ($_POST['action'] == 'delete_partenaire_garage' && isset($_POST['id_garage'])) {
             $id_garage = (int)$_POST['id_garage'];
             try {
@@ -105,6 +143,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
                 error_log("Erreur delete_partenaire_garage: " . $e->getMessage());
                 $_SESSION['admin_message'] = ['type' => 'error', 'text' => "Erreur base de données suppression partenaire."];
             }
+            header("Location: admin_dashboard.php#admin-garages-section");
+            exit;
         }
         // --- Fin Traitement Actions Garages ---
 
@@ -211,6 +251,62 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
                 }
             }
             header("Location: admin_dashboard.php#admin-products-content-NEW");
+            exit;
+        }
+        // --- Traitement Mise à Jour Paramètres ---
+        elseif ($_POST['action'] == 'update_settings') {
+            if (isset($_POST['settings']) && is_array($_POST['settings'])) {
+                $new_settings_input = $_POST['settings'];
+                $current_settings = $settings; // $settings est déjà chargé au début du script
+
+                $settings_to_save = []; // Initialiser le tableau des paramètres à sauvegarder
+
+                // Informations Administrateur
+                $settings_to_save['admin_firstname'] = trim($new_settings_input['admin_firstname'] ?? '');
+                $settings_to_save['admin_name'] = trim($new_settings_input['admin_name'] ?? '');
+                $settings_to_save['admin_email'] = trim($new_settings_input['admin_email'] ?? '');
+
+                // Configuration Stripe
+                $settings_to_save['stripe_pk'] = trim($new_settings_input['stripe_pk'] ?? '');
+                // Gestion spécifique pour la clé secrète Stripe: ne pas l'écraser avec une valeur vide si elle n'est pas modifiée
+                if (isset($new_settings_input['stripe_sk']) && !empty($new_settings_input['stripe_sk'])) {
+                    $settings_to_save['stripe_sk'] = trim($new_settings_input['stripe_sk']);
+                } elseif (isset($current_settings['stripe_sk'])) {
+                    $settings_to_save['stripe_sk'] = $current_settings['stripe_sk']; // Conserver l'ancienne si non fournie
+                } else {
+                    $settings_to_save['stripe_sk'] = '';
+                }
+
+                // Nettoyage et préparation des données des transporteurs
+                $updated_carriers = [];
+                if (isset($new_settings_input['carriers']) && is_array($new_settings_input['carriers'])) {
+                    foreach ($new_settings_input['carriers'] as $carrier_data) {
+                        if (isset($carrier_data['name']) && trim($carrier_data['name']) !== '') { // N'ajoute que si le nom du transporteur est renseigné
+                            $updated_carriers[] = [
+                                'name' => trim($carrier_data['name']),
+                                'price' => !empty($carrier_data['price']) ? (float)str_replace(',', '.', $carrier_data['price']) : 0.0,
+                                'delay' => trim($carrier_data['delay'] ?? '')
+                            ];
+                        }
+                    }
+                }
+                $settings_to_save['carriers'] = $updated_carriers;
+
+                // S'assurer que le répertoire config existe
+                if (!is_dir('config')) {
+                    mkdir('config', 0777, true);
+                }
+
+                if (file_put_contents($settings_file, json_encode($settings_to_save, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))) {
+                    $_SESSION['admin_message'] = ['type' => 'success', 'text' => 'Paramètres mis à jour avec succès.'];
+                    $settings = $settings_to_save; // Mettre à jour la variable $settings pour la page actuelle
+                } else {
+                    $_SESSION['admin_message'] = ['type' => 'error', 'text' => 'Erreur lors de l\'enregistrement des paramètres. Vérifiez les permissions du dossier config.'];
+                }
+            } else {
+                $_SESSION['admin_message'] = ['type' => 'error', 'text' => 'Données de paramètres invalides.'];
+            }
+            header("Location: admin_dashboard.php#admin-settings-content"); // Rediriger vers la section des paramètres
             exit;
         }
         // ... (Le reste de votre logique POST est conservé)
@@ -595,9 +691,74 @@ try {
                  </div>
 
             <div id="admin-settings-content" class="admin-content-section">
-                <div class="admin-content-header"><h1>Paramètres du Site</h1></div>
-                <p>Section des paramètres à développer (ex: infos du site, clés API, etc.).</p>
+                <div class="admin-content-header">
+                    <h1>Paramètres du Site</h1>
                 </div>
+                <form id="admin-settings-form" class="admin-settings-form" method="POST" action="admin_dashboard.php#admin-settings-content">
+                    <input type="hidden" name="action" value="update_settings">
+                    <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+
+                    <div class="detail-card">
+                        <h2>Informations Administrateur</h2>
+                        <div class="form-group">
+                            <label for="setting-admin-firstname">Prénom de l'administrateur:</label>
+                            <input type="text" id="setting-admin-firstname" name="settings[admin_firstname]" value="<?php echo sanitize_html_output($settings['admin_firstname'] ?? ''); ?>" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="setting-admin-name">Nom de l'administrateur:</label>
+                            <input type="text" id="setting-admin-name" name="settings[admin_name]" value="<?php echo sanitize_html_output($settings['admin_name'] ?? ''); ?>" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="setting-admin-email">Email de l'administrateur (pour notifications):</label>
+                            <input type="email" id="setting-admin-email" name="settings[admin_email]" value="<?php echo sanitize_html_output($settings['admin_email'] ?? ''); ?>" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="detail-card">
+                        <h2>Configuration des Paiements (Stripe)</h2>
+                        <p>Laissez vide si non utilisé. Les clés sont stockées de manière sécurisée.</p>
+                        <div class="form-group">
+                            <label for="setting-stripe-pk">Stripe Clé Publique (Publishable Key):</label>
+                            <input type="text" id="setting-stripe-pk" name="settings[stripe_pk]" value="<?php echo sanitize_html_output($settings['stripe_pk'] ?? ''); ?>" class="form-control" placeholder="pk_test_...">
+                        </div>
+                        <div class="form-group">
+                            <label for="setting-stripe-sk">Stripe Clé Secrète (Secret Key):</label>
+                            <input type="password" id="setting-stripe-sk" name="settings[stripe_sk]" value="<?php echo sanitize_html_output($settings['stripe_sk'] ?? ''); ?>" class="form-control" placeholder="sk_test_... ou rk_test_...">
+                             <small>La clé secrète n'est affichée qu'une seule fois. Si vous la modifiez, entrez la nouvelle clé.</small>
+                        </div>
+                    </div>
+
+                    <div class="detail-card">
+                        <h2>Configuration des Transporteurs</h2>
+                        <div id="carriers-container">
+                            <?php
+                            $carriers = isset($settings['carriers']) && is_array($settings['carriers']) ? $settings['carriers'] : [['name'=>'', 'price'=>'', 'delay'=>'']];
+                            foreach ($carriers as $index => $carrier): ?>
+                            <div class="carrier-group" data-index="<?php echo $index; ?>">
+                                <h4>Transporteur <?php echo $index + 1; ?> <?php if ($index > 0) echo '<button type="button" class="remove-carrier-btn" style="font-size:0.8em;padding:0.2em 0.5em; margin-left:10px;">&times; Supprimer</button>'; ?></h4>
+                                <div class="form-group">
+                                    <label for="carrier-name-<?php echo $index; ?>">Nom du transporteur:</label>
+                                    <input type="text" id="carrier-name-<?php echo $index; ?>" name="settings[carriers][<?php echo $index; ?>][name]" value="<?php echo sanitize_html_output($carrier['name'] ?? ''); ?>" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="carrier-price-<?php echo $index; ?>">Prix (€):</label>
+                                    <input type="number" step="0.01" id="carrier-price-<?php echo $index; ?>" name="settings[carriers][<?php echo $index; ?>][price]" value="<?php echo sanitize_html_output($carrier['price'] ?? ''); ?>" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="carrier-delay-<?php echo $index; ?>">Délai de livraison (ex: 2-3 jours ouvrés):</label>
+                                    <input type="text" id="carrier-delay-<?php echo $index; ?>" name="settings[carriers][<?php echo $index; ?>][delay]" value="<?php echo sanitize_html_output($carrier['delay'] ?? ''); ?>" class="form-control">
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <button type="button" id="add-carrier-btn" class="cta-button secondary" style="margin-top:1rem;"><i class="fas fa-plus"></i> Ajouter un transporteur</button>
+                    </div>
+
+                    <div style="text-align: right; margin-top:1.5rem;">
+                        <button type="submit" class="cta-button">Enregistrer les Paramètres</button>
+                    </div>
+                </form>
+            </div>
 
             <!-- Section Gestion des Garages Partenaires -->
             <div id="admin-garages-section" class="admin-content-section">
@@ -1063,6 +1224,82 @@ try {
                 }
             });
         }
+
+        // --- GESTION DYNAMIQUE DES TRANSPORTEURS DANS LES PARAMÈTRES ---
+        const carriersContainer = document.getElementById('carriers-container');
+        const addCarrierBtn = document.getElementById('add-carrier-btn');
+
+        function createCarrierGroupHTML(index) {
+            return `
+                <h4>Transporteur ${index + 1} <button type="button" class="remove-carrier-btn" style="font-size:0.8em;padding:0.2em 0.5em; margin-left:10px;">&times; Supprimer</button></h4>
+                <div class="form-group">
+                    <label for="carrier-name-${index}">Nom du transporteur:</label>
+                    <input type="text" id="carrier-name-${index}" name="settings[carriers][${index}][name]" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="carrier-price-${index}">Prix (€):</label>
+                    <input type="number" step="0.01" id="carrier-price-${index}" name="settings[carriers][${index}][price]" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="carrier-delay-${index}">Délai de livraison (ex: 2-3 jours ouvrés):</label>
+                    <input type="text" id="carrier-delay-${index}" name="settings[carriers][${index}][delay]" class="form-control">
+                </div>
+            `;
+        }
+
+        function renumberCarrierGroups() {
+            const groups = carriersContainer.querySelectorAll('.carrier-group');
+            groups.forEach((group, i) => {
+                group.dataset.index = i;
+                group.querySelector('h4').innerHTML = `Transporteur ${i + 1} ${i > 0 ? '<button type="button" class="remove-carrier-btn" style="font-size:0.8em;padding:0.2em 0.5em; margin-left:10px;">&times; Supprimer</button>' : ''}`;
+                group.querySelectorAll('label, input').forEach(el => {
+                    if (el.hasAttribute('for')) {
+                        el.setAttribute('for', el.getAttribute('for').replace(/-\d+$/, `-${i}`));
+                    }
+                    if (el.hasAttribute('id')) {
+                        el.id = el.id.replace(/-\d+$/, `-${i}`);
+                    }
+                    if (el.hasAttribute('name')) {
+                        el.name = el.name.replace(/\[\d+\]/, `[${i}]`);
+                    }
+                });
+            });
+        }
+
+
+        if (addCarrierBtn && carriersContainer) {
+            addCarrierBtn.addEventListener('click', () => {
+                const newIndex = carriersContainer.querySelectorAll('.carrier-group').length;
+                const newGroup = document.createElement('div');
+                newGroup.classList.add('carrier-group');
+                newGroup.dataset.index = newIndex;
+                newGroup.innerHTML = createCarrierGroupHTML(newIndex);
+                carriersContainer.appendChild(newGroup);
+                renumberCarrierGroups(); // Pour s'assurer que les boutons supprimer sont corrects
+            });
+        }
+
+        if (carriersContainer) {
+            carriersContainer.addEventListener('click', function(event) {
+                if (event.target.classList.contains('remove-carrier-btn') || event.target.closest('.remove-carrier-btn')) {
+                    const groupToRemove = event.target.closest('.carrier-group');
+                    if (groupToRemove) {
+                        if (carriersContainer.querySelectorAll('.carrier-group').length > 1) {
+                            groupToRemove.remove();
+                            renumberCarrierGroups(); // Re-numéroter après suppression
+                        } else {
+                            // Optionnel: vider les champs du premier groupe
+                            groupToRemove.querySelectorAll('input').forEach(input => input.value = '');
+                            // alert("Vous ne pouvez pas supprimer le dernier transporteur. Videz ses champs si vous ne souhaitez pas l'utiliser.");
+                        }
+                    }
+                }
+            });
+             // S'assurer que le premier groupe n'a pas de bouton supprimer s'il est seul au chargement
+            renumberCarrierGroups();
+        }
+        // --- FIN GESTION DYNAMIQUE DES TRANSPORTEURS ---
+
     });
     </script>
 </body>
