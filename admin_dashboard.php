@@ -24,8 +24,93 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
     if (!isset($_POST['csrf_token']) || !hash_equals($csrf_token, $_POST['csrf_token'])) {
         $_SESSION['admin_message'] = ['type' => 'error', 'text' => 'Erreur de sécurité (CSRF). Action annulée.'];
     } else {
+        // --- Traitement Actions Garages ---
+        if ($_POST['action'] == 'approve_candidature_garage' && isset($_POST['id_candidat_modal_garage'])) {
+            $id_candidat = (int)$_POST['id_candidat_modal_garage'];
+            $nom_garage = trim($_POST['nom_garage_modal']);
+            $adresse_complete = trim($_POST['adresse_complete_modal']);
+            $telephone = trim($_POST['telephone_modal']);
+            $email = trim($_POST['email_modal']);
+            $services_offerts = trim($_POST['services_offerts_modal']);
+            $description_courte = trim($_POST['description_courte_modal']);
+            $latitude = !empty($_POST['latitude_modal']) ? filter_var($_POST['latitude_modal'], FILTER_VALIDATE_FLOAT) : null;
+            $longitude = !empty($_POST['longitude_modal']) ? filter_var($_POST['longitude_modal'], FILTER_VALIDATE_FLOAT) : null;
+            $horaires_ouverture = trim($_POST['horaires_ouverture_modal']);
+            $url_website = trim($_POST['url_website_modal']);
+
+            if (empty($nom_garage) || empty($adresse_complete)) {
+                $_SESSION['admin_message'] = ['type' => 'error', 'text' => "Le nom du garage et l'adresse sont requis pour l'approbation."];
+            } else {
+                try {
+                    $pdo->beginTransaction();
+                    $sql_insert_partenaire = "INSERT INTO GaragesPartenaires (nom_garage, adresse_complete, telephone, email, services_offerts, description_courte, latitude, longitude, horaires_ouverture, url_website, est_visible) VALUES (:nom, :adresse, :tel, :email, :services, :desc, :lat, :lon, :horaires, :site, TRUE)";
+                    $stmt_insert = $pdo->prepare($sql_insert_partenaire);
+                    $stmt_insert->execute([':nom' => $nom_garage, ':adresse' => $adresse_complete, ':tel' => $telephone, ':email' => $email, ':services' => $services_offerts, ':desc' => $description_courte, ':lat' => $latitude, ':lon' => $longitude, ':horaires' => $horaires_ouverture, ':site' => $url_website]);
+                    $sql_update_candidat = "UPDATE GaragesCandidats SET statut = 'approuve' WHERE id_candidat = :id_candidat";
+                    $stmt_update = $pdo->prepare($sql_update_candidat);
+                    $stmt_update->execute([':id_candidat' => $id_candidat]);
+                    $pdo->commit();
+                    $_SESSION['admin_message'] = ['type' => 'success', 'text' => "Candidature approuvée et ajoutée aux partenaires."];
+                } catch (PDOException $e) {
+                    $pdo->rollBack();
+                    error_log("Erreur approve_candidature_garage: " . $e->getMessage());
+                    $_SESSION['admin_message'] = ['type' => 'error', 'text' => "Erreur base de données approbation: " . $e->getMessage()];
+                }
+            }
+        } elseif ($_POST['action'] == 'reject_candidature_garage' && isset($_POST['id_candidat_garage'])) {
+            $id_candidat = (int)$_POST['id_candidat_garage'];
+            try {
+                $sql_update_candidat = "UPDATE GaragesCandidats SET statut = 'rejete' WHERE id_candidat = :id_candidat";
+                $stmt_update = $pdo->prepare($sql_update_candidat);
+                $stmt_update->execute([':id_candidat' => $id_candidat]);
+                $_SESSION['admin_message'] = ['type' => 'success', 'text' => "Candidature rejetée."];
+            } catch (PDOException $e) {
+                error_log("Erreur reject_candidature_garage: " . $e->getMessage());
+                $_SESSION['admin_message'] = ['type' => 'error', 'text' => "Erreur base de données rejet."];
+            }
+        } elseif ($_POST['action'] == 'update_partenaire_garage' && isset($_POST['id_garage_modal'])) {
+            $id_garage = (int)$_POST['id_garage_modal'];
+            $nom_garage = trim($_POST['nom_garage_modal']);
+            $adresse_complete = trim($_POST['adresse_complete_modal']);
+            $telephone = trim($_POST['telephone_modal']);
+            $email = trim($_POST['email_modal']);
+            $services_offerts = trim($_POST['services_offerts_modal']);
+            $description_courte = trim($_POST['description_courte_modal']);
+            $latitude = !empty($_POST['latitude_modal']) ? filter_var($_POST['latitude_modal'], FILTER_VALIDATE_FLOAT) : null;
+            $longitude = !empty($_POST['longitude_modal']) ? filter_var($_POST['longitude_modal'], FILTER_VALIDATE_FLOAT) : null;
+            $horaires_ouverture = trim($_POST['horaires_ouverture_modal']);
+            $url_website = trim($_POST['url_website_modal']);
+            $est_visible = isset($_POST['est_visible_modal']) ? (int)$_POST['est_visible_modal'] : 0;
+
+            if (empty($nom_garage) || empty($adresse_complete)) {
+                 $_SESSION['admin_message'] = ['type' => 'error', 'text' => "Le nom du garage et l'adresse sont requis."];
+            } else {
+                try {
+                    $sql_update_partenaire = "UPDATE GaragesPartenaires SET nom_garage = :nom, adresse_complete = :adresse, telephone = :tel, email = :email, services_offerts = :services, description_courte = :desc, latitude = :lat, longitude = :lon, horaires_ouverture = :horaires, url_website = :site, est_visible = :visible WHERE id_garage = :id_garage";
+                    $stmt_update = $pdo->prepare($sql_update_partenaire);
+                    $stmt_update->execute([':nom' => $nom_garage, ':adresse' => $adresse_complete, ':tel' => $telephone, ':email' => $email, ':services' => $services_offerts, ':desc' => $description_courte, ':lat' => $latitude, ':lon' => $longitude, ':horaires' => $horaires_ouverture, ':site' => $url_website, ':visible' => $est_visible, ':id_garage' => $id_garage]);
+                    $_SESSION['admin_message'] = ['type' => 'success', 'text' => "Informations du partenaire mises à jour."];
+                } catch (PDOException $e) {
+                    error_log("Erreur update_partenaire_garage: " . $e->getMessage());
+                    $_SESSION['admin_message'] = ['type' => 'error', 'text' => "Erreur base de données mise à jour partenaire."];
+                }
+            }
+        } elseif ($_POST['action'] == 'delete_partenaire_garage' && isset($_POST['id_garage'])) {
+            $id_garage = (int)$_POST['id_garage'];
+            try {
+                $sql_delete = "DELETE FROM GaragesPartenaires WHERE id_garage = :id_garage";
+                $stmt_delete = $pdo->prepare($sql_delete);
+                $stmt_delete->execute([':id_garage' => $id_garage]);
+                $_SESSION['admin_message'] = ['type' => 'success', 'text' => "Garage partenaire supprimé."];
+            } catch (PDOException $e) {
+                error_log("Erreur delete_partenaire_garage: " . $e->getMessage());
+                $_SESSION['admin_message'] = ['type' => 'error', 'text' => "Erreur base de données suppression partenaire."];
+            }
+        }
+        // --- Fin Traitement Actions Garages ---
+
         // --- Traitement Ajout/Modification Produit ---
-        if ($_POST['action'] == 'add_edit_product') {
+        elseif ($_POST['action'] == 'add_edit_product') {
             // Récupération des données du formulaire
             $nom = trim($_POST['nom'] ?? '');
             $taille = trim($_POST['taille'] ?? '');
@@ -412,6 +497,7 @@ try {
                     <li><a href="#" data-target="admin-products-content-NEW"><i class="fas fa-box-open"></i> Produits</a></li>
                     <li><a href="#" data-target="admin-promo-codes-content"><i class="fas fa-percentage"></i> Codes Promo</a></li>
                     <li><a href="#" data-target="admin-clients-content"><i class="fas fa-users"></i> Clients</a></li>
+                    <li><a href="#" data-target="admin-garages-section"><i class="fas fa-warehouse"></i> Gestion Garages</a></li>
                     <li><a href="#" data-target="admin-settings-content"><i class="fas fa-cog"></i> Paramètres</a></li>
                 </ul>
             </nav>
@@ -509,7 +595,143 @@ try {
                  </div>
 
             <div id="admin-settings-content" class="admin-content-section">
+                <div class="admin-content-header"><h1>Paramètres du Site</h1></div>
+                <p>Section des paramètres à développer (ex: infos du site, clés API, etc.).</p>
                 </div>
+
+            <!-- Section Gestion des Garages Partenaires -->
+            <div id="admin-garages-section" class="admin-content-section">
+                <div class="admin-content-header">
+                    <h1>Gestion des Garages Partenaires</h1>
+                </div>
+
+                <?php
+                // Récupération des candidatures en attente pour cette section
+                $candidatures_garages_section = [];
+                try {
+                    $stmt_candidats_g_section = $pdo->query("SELECT * FROM GaragesCandidats WHERE statut = 'en_attente' ORDER BY date_soumission DESC");
+                    if ($stmt_candidats_g_section) $candidatures_garages_section = $stmt_candidats_g_section->fetchAll(PDO::FETCH_ASSOC);
+                } catch (PDOException $e) { /* Erreur déjà loggée plus haut ou à gérer spécifiquement */ }
+
+                // Récupération des partenaires approuvés pour cette section
+                $partenaires_garages_section = [];
+                try {
+                    $stmt_partenaires_g_section = $pdo->query("SELECT * FROM GaragesPartenaires ORDER BY nom_garage ASC");
+                    if ($stmt_partenaires_g_section) $partenaires_garages_section = $stmt_partenaires_g_section->fetchAll(PDO::FETCH_ASSOC);
+                } catch (PDOException $e) { /* Erreur déjà loggée plus haut ou à gérer spécifiquement */ }
+                ?>
+
+                <div class="admin-table-container detail-card" id="candidatures-garages-sub">
+                    <h2>Candidatures en attente</h2>
+                    <?php if (empty($candidatures_garages_section)): ?>
+                        <p>Aucune nouvelle candidature pour le moment.</p>
+                    <?php else: ?>
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Nom Garage</th>
+                                    <th>Contact</th>
+                                    <th>Services Proposés</th>
+                                    <th>Message</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($candidatures_garages_section as $candidat_g): ?>
+                                    <tr>
+                                        <td><?php echo sanitize_html_output($candidat_g['nom_garage']); ?></td>
+                                        <td>
+                                            Email: <?php echo sanitize_html_output($candidat_g['email_contact']); ?><br>
+                                            Tél: <?php echo sanitize_html_output($candidat_g['telephone_garage']); ?><br>
+                                            Adresse: <?php echo sanitize_html_output($candidat_g['adresse_garage']); ?>
+                                        </td>
+                                        <td><?php echo nl2br(sanitize_html_output($candidat_g['services_proposes'])); ?></td>
+                                        <td><?php echo nl2br(sanitize_html_output($candidat_g['message_partenaire'])); ?></td>
+                                        <td><?php echo date("d/m/Y H:i", strtotime($candidat_g['date_soumission'])); ?></td>
+                                        <td class="actions">
+                                            <button type="button" class="admin-action-btn edit-btn open-approve-garage-modal"
+                                                    data-id="<?php echo $candidat_g['id_candidat']; ?>"
+                                                    data-nom="<?php echo sanitize_html_output($candidat_g['nom_garage']); ?>"
+                                                    data-adresse="<?php echo sanitize_html_output($candidat_g['adresse_garage']); ?>"
+                                                    data-tel="<?php echo sanitize_html_output($candidat_g['telephone_garage']); ?>"
+                                                    data-email="<?php echo sanitize_html_output($candidat_g['email_contact']); ?>"
+                                                    data-services="<?php echo sanitize_html_output($candidat_g['services_proposes']); ?>"
+                                            >Approuver</button>
+                                            <form method="POST" action="admin_dashboard.php#admin-garages-section" class="form-admin-inline" onsubmit="return confirm('Rejeter cette candidature ?');">
+                                                <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+                                                <input type="hidden" name="action" value="reject_candidature_garage">
+                                                <input type="hidden" name="id_candidat_garage" value="<?php echo $candidat_g['id_candidat']; ?>">
+                                                <button type="submit" class="admin-action-btn delete-btn">Rejeter</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
+                </div>
+
+                <div class="admin-table-container detail-card" id="partenaires-garages-sub" style="margin-top: 2rem;">
+                    <h2>Garages Partenaires Approuvés</h2>
+                    <?php if (empty($partenaires_garages_section)): ?>
+                        <p>Aucun garage partenaire approuvé pour le moment.</p>
+                    <?php else: ?>
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Nom Garage</th>
+                                    <th>Contact</th>
+                                    <th>Adresse</th>
+                                    <th>Coordonnées GPS</th>
+                                    <th>Visible</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($partenaires_garages_section as $partenaire_g): ?>
+                                    <tr>
+                                        <td><?php echo sanitize_html_output($partenaire_g['nom_garage']); ?></td>
+                                        <td>
+                                            Email: <?php echo sanitize_html_output($partenaire_g['email']); ?><br>
+                                            Tél: <?php echo sanitize_html_output($partenaire_g['telephone']); ?>
+                                        </td>
+                                        <td><?php echo sanitize_html_output($partenaire_g['adresse_complete']); ?></td>
+                                        <td>
+                                            Lat: <?php echo sanitize_html_output($partenaire_g['latitude'] ?? 'N/A'); ?><br>
+                                            Lon: <?php echo sanitize_html_output($partenaire_g['longitude'] ?? 'N/A'); ?>
+                                        </td>
+                                        <td><?php echo $partenaire_g['est_visible'] ? 'Oui' : 'Non'; ?></td>
+                                        <td class="actions">
+                                             <button type="button" class="admin-action-btn edit-btn open-edit-garage-modal"
+                                                    data-id="<?php echo $partenaire_g['id_garage']; ?>"
+                                                    data-nom="<?php echo sanitize_html_output($partenaire_g['nom_garage']); ?>"
+                                                    data-adresse="<?php echo sanitize_html_output($partenaire_g['adresse_complete']); ?>"
+                                                    data-tel="<?php echo sanitize_html_output($partenaire_g['telephone']); ?>"
+                                                    data-email="<?php echo sanitize_html_output($partenaire_g['email']); ?>"
+                                                    data-services="<?php echo sanitize_html_output($partenaire_g['services_offerts']); ?>"
+                                                    data-description="<?php echo sanitize_html_output($partenaire_g['description_courte']); ?>"
+                                                    data-lat="<?php echo sanitize_html_output($partenaire_g['latitude']); ?>"
+                                                    data-lon="<?php echo sanitize_html_output($partenaire_g['longitude']); ?>"
+                                                    data-horaires="<?php echo sanitize_html_output($partenaire_g['horaires_ouverture']); ?>"
+                                                    data-website="<?php echo sanitize_html_output($partenaire_g['url_website']); ?>"
+                                                    data-visible="<?php echo $partenaire_g['est_visible'] ? '1' : '0'; ?>"
+                                            >Modifier</button>
+                                            <form method="POST" action="admin_dashboard.php#admin-garages-section" class="form-admin-inline" onsubmit="return confirm('Supprimer ce partenaire ? Cette action est irréversible.');">
+                                                <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+                                                <input type="hidden" name="action" value="delete_partenaire_garage">
+                                                <input type="hidden" name="id_garage" value="<?php echo $partenaire_g['id_garage']; ?>">
+                                                <button type="submit" class="admin-action-btn delete-btn">Supprimer</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <!-- Fin Section Gestion des Garages Partenaires -->
         </main>
     </div>
 
@@ -517,7 +739,110 @@ try {
         <p>&copy; <span id="current-year-admin-dash"></span> Ouipneu.fr - Interface d'Administration</p>
     </footer>
 
+    <!-- Modal pour Produits -->
     <div id="product-modal-overlay">
+        <div id="product-modal-content">
+            <div class="product-modal-header">
+                <h2 id="product-form-title-NEW">Ajouter un Produit</h2>
+                <button type="button" id="close-product-modal-btn" aria-label="Fermer">&times;</button>
+            </div>
+            <div class="product-modal-body">
+                <form id="add-product-form-NEW" method="POST" action="admin_dashboard.php#admin-products-content-NEW" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="add_edit_product">
+                    <input type="hidden" name="id_pneu_edit" id="edit-product-id-NEW" value="">
+                    <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+                    <input type="hidden" name="current_image_path" id="current-image-path-NEW" value="">
+                    <div class="form-group"><label for="product-nom">Nom <span style="color:red;">*</span></label><input type="text" id="product-nom" name="nom" required class="form-control"></div>
+                    <div class="form-group"><label for="product-taille">Taille <span style="color:red;">*</span></label><input type="text" id="product-taille" name="taille" required class="form-control"></div>
+                    <div class="form-group"><label for="product-saison">Saison <span style="color:red;">*</span></label><select id="product-saison" name="saison" required class="form-control"><option value="Été">Été</option><option value="Hiver">Hiver</option><option value="4 Saisons">4 Saisons</option></select></div>
+                    <div class="form-group"><label for="product-prix">Prix (€) <span style="color:red;">*</span></label><input type="text" id="product-prix" name="prix" required class="form-control"></div>
+                    <div class="form-group"><label for="product-stock">Stock <span style="color:red;">*</span></label><input type="number" id="product-stock" name="stock_disponible" min="0" required class="form-control"></div>
+                    <div class="form-group"><label for="product-image">Image</label><input type="file" id="product-image" name="image_produit" class="form-control" accept="image/png, image/jpeg, image/webp"></div>
+                    <div class="form-group"><label for="product-description">Description</label><textarea id="product-description" name="description" rows="3" class="form-control"></textarea></div>
+                    <div class="form-group"><label for="product-specifications">Spécifications</label><input type="text" id="product-specifications" name="specifications" class="form-control"></div>
+                    <div class="form-group"><label>Statut</label><div><input type="radio" id="product-status-active-NEW" name="est_actif" value="1" checked><label for="product-status-active-NEW">Actif</label><input type="radio" id="product-status-inactive-NEW" name="est_actif" value="0"><label for="product-status-inactive-NEW">Inactif</label></div></div>
+                </form>
+            </div>
+            <div class="product-modal-footer">
+                <button type="button" id="cancel-add-product-NEW" class="cta-button secondary">Annuler</button>
+                <button type="submit" form="add-product-form-NEW" class="cta-button">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour Gestion des Garages -->
+    <div id="garage-admin-modal-overlay" class="modal-admin" style="display: none;">
+        <div class="modal-admin-content">
+            <div class="product-modal-header"> <!-- Réutilisation de la classe pour style similaire -->
+                <h2 id="garage-modal-title">Approuver/Modifier Garage</h2>
+                <button type="button" class="close-garage-admin-modal" aria-label="Fermer">&times;</button>
+            </div>
+            <div class="product-modal-body"> <!-- Réutilisation de la classe pour style similaire -->
+                <form id="garage-admin-form" method="POST" action="admin_dashboard.php#admin-garages-section">
+                    <input type="hidden" name="action" id="garage-modal-action" value="">
+                    <input type="hidden" name="id_candidat_modal_garage" id="garage-modal-id-candidat" value="">
+                    <input type="hidden" name="id_garage_modal" id="garage-modal-id-garage" value="">
+                    <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+
+                    <div class="form-group">
+                        <label for="garage-modal-nom-garage">Nom du Garage:</label>
+                        <input type="text" id="garage-modal-nom-garage" name="nom_garage_modal" required class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="garage-modal-adresse-complete">Adresse Complète:</label>
+                        <textarea id="garage-modal-adresse-complete" name="adresse_complete_modal" rows="3" required class="form-control"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="garage-modal-telephone">Téléphone:</label>
+                        <input type="tel" id="garage-modal-telephone" name="telephone_modal" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="garage-modal-email">Email:</label>
+                        <input type="email" id="garage-modal-email" name="email_modal" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="garage-modal-services-offerts">Services Offerts:</label>
+                        <textarea id="garage-modal-services-offerts" name="services_offerts_modal" rows="3" class="form-control"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="garage-modal-description-courte">Description Courte (pour page publique):</label>
+                        <textarea id="garage-modal-description-courte" name="description_courte_modal" rows="3" class="form-control"></textarea>
+                    </div>
+                    <div style="display:flex; gap: 1rem;">
+                        <div class="form-group" style="flex:1;">
+                            <label for="garage-modal-latitude">Latitude (ex: 48.8566):</label>
+                            <input type="number" step="any" id="garage-modal-latitude" name="latitude_modal" class="form-control">
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label for="garage-modal-longitude">Longitude (ex: 2.3522):</label>
+                            <input type="number" step="any" id="garage-modal-longitude" name="longitude_modal" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="garage-modal-horaires-ouverture">Horaires d'ouverture (texte libre):</label>
+                        <input type="text" id="garage-modal-horaires-ouverture" name="horaires_ouverture_modal" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="garage-modal-url-website">Site Web (URL complète):</label>
+                        <input type="text" id="garage-modal-url-website" name="url_website_modal" class="form-control">
+                    </div>
+                    <div class="form-group" id="garage-modal-visibility-field" style="display:none;">
+                        <label for="garage-modal-est-visible">Visible sur le site public:</label>
+                        <select id="garage-modal-est-visible" name="est_visible_modal" class="form-control">
+                            <option value="1">Oui</option>
+                            <option value="0">Non</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="product-modal-footer"> <!-- Réutilisation de la classe pour style similaire -->
+                <button type="button" id="cancel-garage-admin-action" class="cta-button secondary close-garage-admin-modal">Annuler</button>
+                <button type="submit" form="garage-admin-form" class="cta-button">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
         <div id="product-modal-content">
             <div class="product-modal-header">
                 <h2 id="product-form-title-NEW">Ajouter un Produit</h2>
