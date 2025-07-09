@@ -325,7 +325,23 @@ try {
     $liste_pneus = $stmt_pneus->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     error_log("Erreur Admin - Récupération pneus: " . $e->getMessage());
-    $admin_message_display = ['type' => 'error', 'text' => 'Erreur de chargement des pneus.'];
+    // Ne pas écraser $admin_message_display s'il est déjà défini par une action POST
+    if ($admin_message_display === null) {
+        $admin_message_display = ['type' => 'error', 'text' => 'Erreur de chargement des pneus.'];
+    }
+}
+
+// --- Récupération des clients pour l'affichage ---
+$liste_clients = [];
+try {
+    // Utilisation des noms de colonnes de Utilisateurs tels que vus dans admin_client_detail.php
+    $stmt_clients = $pdo->query("SELECT id_utilisateur, nom_utilisateur, prenom_utilisateur, email_utilisateur, date_creation_compte FROM Utilisateurs WHERE est_admin = 0 OR est_admin IS NULL ORDER BY date_creation_compte DESC");
+    $liste_clients = $stmt_clients->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    error_log("Erreur Admin - Récupération clients: " . $e->getMessage());
+    if ($admin_message_display === null) {
+        $admin_message_display = ['type' => 'error', 'text' => 'Erreur de chargement des clients.'];
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -688,6 +704,42 @@ try {
                 </div>
 
             <div id="admin-clients-content" class="admin-content-section">
+                <div class="admin-content-header">
+                    <h1>Gestion des Clients</h1>
+                </div>
+                <div class="admin-table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID Client</th>
+                                <th>Prénom</th>
+                                <th>Nom</th>
+                                <th>Email</th>
+                                <th>Date d'Inscription</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($liste_clients)): ?>
+                                <tr><td colspan="6" style="text-align: center; padding: 1rem;">Aucun client trouvé.</td></tr>
+                            <?php else: ?>
+                                <?php foreach ($liste_clients as $client): ?>
+                                    <tr>
+                                        <td><?php echo sanitize_html_output($client['id_utilisateur']); ?></td>
+                                        <td><?php echo sanitize_html_output($client['prenom_utilisateur']); // Modifié ?></td>
+                                        <td><?php echo sanitize_html_output($client['nom_utilisateur']); // Modifié ?></td>
+                                        <td><?php echo sanitize_html_output($client['email_utilisateur']); // Modifié ?></td>
+                                        <td><?php echo sanitize_html_output(date("d/m/Y H:i", strtotime($client['date_creation_compte']))); // Modifié ?></td>
+                                        <td class="actions">
+                                            <a href="admin_client_detail.php?id_client=<?php echo $client['id_utilisateur']; ?>" class="admin-action-btn edit-btn">Voir Détails</a>
+                                            <!-- Autres actions futures possibles : ex: Modifier, Supprimer -->
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
                  </div>
 
             <div id="admin-settings-content" class="admin-content-section">
@@ -1299,6 +1351,23 @@ try {
             renumberCarrierGroups();
         }
         // --- FIN GESTION DYNAMIQUE DES TRANSPORTEURS ---
+
+        // --- Gestion de l'auto-masquage des notifications globales ---
+        const globalNotificationBar = document.querySelector('.global-notification-bar.show');
+        if (globalNotificationBar) {
+            setTimeout(() => {
+                globalNotificationBar.classList.remove('show');
+                // Optionnel: supprimer l'élément du DOM après l'animation si vous avez une transition CSS
+                // setTimeout(() => { globalNotificationBar.remove(); }, 500); // 500ms pour la transition
+            }, 5000); // Masquer après 5 secondes
+
+            // Masquer aussi si on clique dessus
+            globalNotificationBar.addEventListener('click', () => {
+                globalNotificationBar.classList.remove('show');
+                // Optionnel: setTimeout(() => { globalNotificationBar.remove(); }, 500);
+            });
+        }
+        // --- Fin gestion notifications ---
 
     });
     </script>
