@@ -334,8 +334,8 @@ try {
 // --- Récupération des clients pour l'affichage ---
 $liste_clients = [];
 try {
-    // Utilisation des noms de colonnes de Utilisateurs tels que vus dans admin_client_detail.php
-    $stmt_clients = $pdo->query("SELECT id_utilisateur, nom_utilisateur, prenom_utilisateur, email_utilisateur, date_creation_compte FROM Utilisateurs WHERE est_admin = 0 OR est_admin IS NULL ORDER BY date_creation_compte DESC");
+    // Utilisation des noms de colonnes corrects de la table Utilisateurs
+    $stmt_clients = $pdo->query("SELECT id_utilisateur, nom, prenom, email, date_inscription FROM Utilisateurs WHERE est_admin = 0 OR est_admin IS NULL ORDER BY date_inscription DESC");
     $liste_clients = $stmt_clients->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     error_log("Erreur Admin - Récupération clients: " . $e->getMessage());
@@ -726,10 +726,10 @@ try {
                                 <?php foreach ($liste_clients as $client): ?>
                                     <tr>
                                         <td><?php echo sanitize_html_output($client['id_utilisateur']); ?></td>
-                                        <td><?php echo sanitize_html_output($client['prenom_utilisateur']); // Modifié ?></td>
-                                        <td><?php echo sanitize_html_output($client['nom_utilisateur']); // Modifié ?></td>
-                                        <td><?php echo sanitize_html_output($client['email_utilisateur']); // Modifié ?></td>
-                                        <td><?php echo sanitize_html_output(date("d/m/Y H:i", strtotime($client['date_creation_compte']))); // Modifié ?></td>
+                                        <td><?php echo sanitize_html_output($client['prenom']); ?></td>
+                                        <td><?php echo sanitize_html_output($client['nom']); ?></td>
+                                        <td><?php echo sanitize_html_output($client['email']); ?></td>
+                                        <td><?php echo sanitize_html_output(date("d/m/Y H:i", strtotime($client['date_inscription']))); ?></td>
                                         <td class="actions">
                                             <a href="admin_client_detail.php?id_client=<?php echo $client['id_utilisateur']; ?>" class="admin-action-btn edit-btn">Voir Détails</a>
                                             <!-- Autres actions futures possibles : ex: Modifier, Supprimer -->
