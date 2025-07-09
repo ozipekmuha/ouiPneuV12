@@ -1,4 +1,3 @@
-
 <?php
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -458,20 +457,21 @@ try {
         .admin-table .actions .toggle-status-btn.status-inactive-btn { background-color: #2ecc71; color: white; border-color: #2ecc71; }
         .admin-table .actions .delete-btn { background-color: var(--bg-surface); color: #e74c3c; border-color: #e74c3c; }
 
-        #product-modal-overlay, #promo-code-modal-overlay {
+        #product-modal-overlay, #promo-code-modal-overlay, .modal-admin /* Ajout de .modal-admin ici */ {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7);
             z-index: 1050; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;
         }
-        #product-modal-content, #promo-code-modal-content {
+        #product-modal-content, #promo-code-modal-content, .modal-admin-content /* Ajout de .modal-admin-content */ {
             background-color: var(--bg-surface); color: var(--text-light); border-radius: 8px; width: 100%; max-width: 650px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3); display: flex; flex-direction: column; max-height: calc(100vh - 40px); overflow: hidden;
         }
-        .product-modal-header, .promo-code-modal-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .product-modal-header h2, .promo-code-modal-header h2 { margin: 0; font-size: 1.4rem; color: var(--accent-primary); }
-        .product-modal-body, .promo-code-modal-body { padding: 1.5rem; overflow-y: auto; }
-        .product-modal-body .form-group, .promo-code-modal-body .form-group { margin-bottom: 1rem; }
-        .product-modal-footer, .promo-code-modal-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border-color); text-align: right; }
-        #close-product-modal-btn, #close-promo-code-modal-btn { background: none; border: none; font-size: 1.8rem; color: var(--text-secondary); cursor: pointer; }
+        .product-modal-header, .promo-code-modal-header /* Partagé avec .modal-admin-content via réutilisation de classes CSS */ { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .product-modal-header h2, .promo-code-modal-header h2 /* Partagé */ { margin: 0; font-size: 1.4rem; color: var(--accent-primary); }
+        .product-modal-body, .promo-code-modal-body /* Partagé */ { padding: 1.5rem; overflow-y: auto; }
+        .product-modal-body .form-group, .promo-code-modal-body .form-group /* Partagé */ { margin-bottom: 1rem; }
+        .product-modal-footer, .promo-code-modal-footer /* Partagé */ { padding: 1rem 1.5rem; border-top: 1px solid var(--border-color); text-align: right; }
+        #close-product-modal-btn, #close-promo-code-modal-btn, .close-garage-admin-modal /* Ajout de .close-garage-admin-modal */ { background: none; border: none; font-size: 1.8rem; color: var(--text-secondary); cursor: pointer; }
+
         .search-bar-container { margin-bottom: 1.5rem; }
         .search-bar-container input { width: 100%; padding: 0.7rem 1rem; background-color: var(--bg-dark); color: var(--text-light); border: 1px solid var(--border-color); border-radius: 5px; font-size: 0.95rem; }
         .form-control { width: 100%; padding: 0.7rem 0.9rem; background-color: var(--bg-dark); color: var(--text-light); border: 1px solid var(--border-color); border-radius: 5px; font-size: 0.95rem; box-sizing: border-box; }
@@ -843,74 +843,36 @@ try {
     </div>
 
     <script>
-        <div id="product-modal-content">
-            <div class="product-modal-header">
-                <h2 id="product-form-title-NEW">Ajouter un Produit</h2>
-                <button type="button" id="close-product-modal-btn" aria-label="Fermer">&times;</button>
-            </div>
-            <div class="product-modal-body">
-                <form id="add-product-form-NEW" method="POST" action="admin_dashboard.php#admin-products-content-NEW" enctype="multipart/form-data">
-                    <input type="hidden" name="action" value="add_edit_product">
-                    <input type="hidden" name="id_pneu_edit" id="edit-product-id-NEW" value="">
-                    <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-                    <input type="hidden" name="current_image_path" id="current-image-path-NEW" value="">
-                    <div class="form-group"><label for="product-nom">Nom <span style="color:red;">*</span></label><input type="text" id="product-nom" name="nom" required class="form-control"></div>
-                    <div class="form-group"><label for="product-taille">Taille <span style="color:red;">*</span></label><input type="text" id="product-taille" name="taille" required class="form-control"></div>
-                    <div class="form-group"><label for="product-saison">Saison <span style="color:red;">*</span></label><select id="product-saison" name="saison" required class="form-control"><option value="Été">Été</option><option value="Hiver">Hiver</option><option value="4 Saisons">4 Saisons</option></select></div>
-                    <div class="form-group"><label for="product-prix">Prix (€) <span style="color:red;">*</span></label><input type="text" id="product-prix" name="prix" required class="form-control"></div>
-                    <div class="form-group"><label for="product-stock">Stock <span style="color:red;">*</span></label><input type="number" id="product-stock" name="stock_disponible" min="0" required class="form-control"></div>
-                    <div class="form-group"><label for="product-image">Image</label><input type="file" id="product-image" name="image_produit" class="form-control" accept="image/png, image/jpeg, image/webp"></div>
-                    <div class="form-group"><label for="product-description">Description</label><textarea id="product-description" name="description" rows="3" class="form-control"></textarea></div>
-                    <div class="form-group"><label for="product-specifications">Spécifications</label><input type="text" id="product-specifications" name="specifications" class="form-control"></div>
-                    <div class="form-group"><label>Statut</label><div><input type="radio" id="product-status-active-NEW" name="est_actif" value="1" checked><label for="product-status-active-NEW">Actif</label><input type="radio" id="product-status-inactive-NEW" name="est_actif" value="0"><label for="product-status-inactive-NEW">Inactif</label></div></div>
-                </form>
-            </div>
-            <div class="product-modal-footer">
-                <button type="button" id="cancel-add-product-NEW" class="cta-button secondary">Annuler</button>
-                <button type="submit" form="add-product-form-NEW" class="cta-button">Enregistrer</button>
-            </div>
-        </div>
-    </div>
-    
-    <script>
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('current-year-admin-dash').textContent = new Date().getFullYear();
 
-        // --- ALGORITHME DE RECHERCHE FINAL ---
+        // --- ALGORITHME DE RECHERCHE PRODUITS ---
         const productSearchInput = document.getElementById('product-search-input');
         const productsTableBody = document.getElementById('products-table-body-NEW');
 
         if (productSearchInput && productsTableBody) {
-            productSearchInput.addEventListener('input', function() { // 'input' est plus réactif que 'keyup'
-                // 1. Sépare la recherche en plusieurs mots-clés
+            productSearchInput.addEventListener('input', function() {
                 const searchTerms = this.value.toLowerCase().trim().split(/\s+/).filter(term => term.length > 0);
-                
                 const rows = productsTableBody.querySelectorAll('tr');
-
                 rows.forEach(row => {
                     if (row.hasAttribute('data-product-search')) {
                         const searchContent = row.dataset.productSearch || '';
-                        // 2. Normalise le contenu de la ligne à chercher
                         const normalizedSearchContent = searchContent.toLowerCase().replace(/[^a-z0-9]/gi, '');
-                        
                         let isMatch = true;
-
-                        // 3. On vérifie si TOUS les mots-clés sont présents
                         for (const term of searchTerms) {
                             const normalizedTerm = term.replace(/[^a-z0-9]/gi, '');
                             if (normalizedTerm && !normalizedSearchContent.includes(normalizedTerm)) {
                                 isMatch = false;
-                                break; 
+                                break;
                             }
                         }
-
                         row.style.display = isMatch ? '' : 'none';
                     }
                 });
             });
         }
         
-        // --- LOGIQUE DE NAVIGATION ET GESTION DES MODALES ---
+        // --- LOGIQUE DE NAVIGATION ADMIN ---
         const adminNavLinks = document.querySelectorAll('.admin-sidebar nav a[data-target], .admin-quick-link[data-target]');
         const adminContentSections = document.querySelectorAll('.admin-content-section');
         const defaultSectionId = 'admin-dashboard-main';
@@ -922,30 +884,43 @@ try {
             document.querySelectorAll('.admin-sidebar nav a').forEach(link => {
                 link.classList.toggle('active', link.dataset.target === targetId);
             });
+             // Ensure the URL hash is updated for direct navigation/refresh
+            if (window.location.hash !== `#${targetId}`) {
+                window.location.hash = targetId;
+            }
         }
 
         adminNavLinks.forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const targetId = e.currentTarget.dataset.target;
-                window.location.hash = targetId;
                 switchAdminSection(targetId);
             });
         });
         
+        // --- GESTION MODALE PRODUITS ---
         const productModalOverlay = document.getElementById('product-modal-overlay');
         const addProductButton = document.getElementById('add-product-button');
         const closeProductModalBtn = document.getElementById('close-product-modal-btn');
         const cancelAddProductBtn = document.getElementById('cancel-add-product-NEW');
+        const productForm = document.getElementById('add-product-form-NEW');
+        const productFormTitle = document.getElementById('product-form-title-NEW');
+        const editProductIdInput = document.getElementById('edit-product-id-NEW');
+        const currentImagePathInput = document.getElementById('current-image-path-NEW');
+
 
         function showProductModal() { if(productModalOverlay) productModalOverlay.style.display = 'flex'; }
         function hideProductModal() { if(productModalOverlay) productModalOverlay.style.display = 'none'; }
 
         if(addProductButton) {
             addProductButton.addEventListener('click', () => {
-                document.getElementById('add-product-form-NEW').reset();
-                document.getElementById('product-form-title-NEW').textContent = 'Ajouter un Nouveau Produit';
-                document.getElementById('edit-product-id-NEW').value = '';
+                if(productForm) productForm.reset();
+                if(productFormTitle) productFormTitle.textContent = 'Ajouter un Nouveau Produit';
+                if(editProductIdInput) editProductIdInput.value = '';
+                if(currentImagePathInput) currentImagePathInput.value = '';
+                // Ensure default radio for status is checked if applicable (e.g., 'Actif')
+                const activeStatusRadio = document.getElementById('product-status-active-NEW');
+                if (activeStatusRadio) activeStatusRadio.checked = true;
                 showProductModal();
             });
         }
@@ -953,8 +928,10 @@ try {
         document.querySelectorAll('.edit-product-btn-js').forEach(button => {
             button.addEventListener('click', function() {
                 const productData = JSON.parse(this.dataset.product);
-                document.getElementById('product-form-title-NEW').textContent = 'Modifier le Produit';
-                document.getElementById('edit-product-id-NEW').value = productData.id;
+                if(productFormTitle) productFormTitle.textContent = 'Modifier le Produit';
+                if(editProductIdInput) editProductIdInput.value = productData.id;
+                if(currentImagePathInput) currentImagePathInput.value = productData.image || '';
+
                 document.getElementById('product-nom').value = productData.nom;
                 document.getElementById('product-taille').value = productData.taille;
                 document.getElementById('product-saison').value = productData.saison;
@@ -971,9 +948,121 @@ try {
         if(cancelAddProductBtn) cancelAddProductBtn.addEventListener('click', hideProductModal);
         if(productModalOverlay) productModalOverlay.addEventListener('click', e => { if(e.target === productModalOverlay) hideProductModal(); });
 
+        // --- GESTION MODALE GARAGES ---
+        const garageModalOverlay = document.getElementById('garage-admin-modal-overlay');
+        const garageModalForm = document.getElementById('garage-admin-form');
+        const garageModalTitle = document.getElementById('garage-modal-title');
+        const garageModalActionInput = document.getElementById('garage-modal-action');
+        const garageModalIdCandidatInput = document.getElementById('garage-modal-id-candidat');
+        const garageModalIdGarageInput = document.getElementById('garage-modal-id-garage');
+        const garageModalVisibilityField = document.getElementById('garage-modal-visibility-field');
+
+        function showGarageModal() { if(garageModalOverlay) garageModalOverlay.style.display = 'flex'; }
+        function hideGarageModal() { if(garageModalOverlay) garageModalOverlay.style.display = 'none'; }
+
+        document.querySelectorAll('.open-approve-garage-modal').forEach(button => {
+            button.addEventListener('click', function() {
+                if(garageModalForm) garageModalForm.reset();
+                if(garageModalTitle) garageModalTitle.textContent = 'Approuver Candidature Garage';
+                if(garageModalActionInput) garageModalActionInput.value = 'approve_candidature_garage';
+                if(garageModalIdCandidatInput) garageModalIdCandidatInput.value = this.dataset.id;
+                if(garageModalIdGarageInput) garageModalIdGarageInput.value = ''; // Pas d'ID de partenaire existant
+
+                document.getElementById('garage-modal-nom-garage').value = this.dataset.nom || '';
+                document.getElementById('garage-modal-adresse-complete').value = this.dataset.adresse || '';
+                document.getElementById('garage-modal-telephone').value = this.dataset.tel || '';
+                document.getElementById('garage-modal-email').value = this.dataset.email || '';
+                document.getElementById('garage-modal-services-offerts').value = this.dataset.services || '';
+                // Champs spécifiques à l'approbation/création, peuvent être vides ou pré-remplis si souhaité
+                document.getElementById('garage-modal-description-courte').value = '';
+                document.getElementById('garage-modal-latitude').value = '';
+                document.getElementById('garage-modal-longitude').value = '';
+                document.getElementById('garage-modal-horaires-ouverture').value = '';
+                document.getElementById('garage-modal-url-website').value = '';
+
+                if(garageModalVisibilityField) garageModalVisibilityField.style.display = 'none';
+                const estVisibleSelect = document.getElementById('garage-modal-est-visible');
+                if (estVisibleSelect) estVisibleSelect.value = '1'; // Default to visible on creation
+
+                showGarageModal();
+            });
+        });
+
+        document.querySelectorAll('.open-edit-garage-modal').forEach(button => {
+            button.addEventListener('click', function() {
+                if(garageModalForm) garageModalForm.reset();
+                if(garageModalTitle) garageModalTitle.textContent = 'Modifier Garage Partenaire';
+                if(garageModalActionInput) garageModalActionInput.value = 'update_partenaire_garage';
+                if(garageModalIdGarageInput) garageModalIdGarageInput.value = this.dataset.id;
+                if(garageModalIdCandidatInput) garageModalIdCandidatInput.value = ''; // Pas d'ID de candidat
+
+                document.getElementById('garage-modal-nom-garage').value = this.dataset.nom || '';
+                document.getElementById('garage-modal-adresse-complete').value = this.dataset.adresse || '';
+                document.getElementById('garage-modal-telephone').value = this.dataset.tel || '';
+                document.getElementById('garage-modal-email').value = this.dataset.email || '';
+                document.getElementById('garage-modal-services-offerts').value = this.dataset.services || '';
+                document.getElementById('garage-modal-description-courte').value = this.dataset.description || '';
+                document.getElementById('garage-modal-latitude').value = this.dataset.lat || '';
+                document.getElementById('garage-modal-longitude').value = this.dataset.lon || '';
+                document.getElementById('garage-modal-horaires-ouverture').value = this.dataset.horaires || '';
+                document.getElementById('garage-modal-url-website').value = this.dataset.website || '';
+
+                const estVisibleSelect = document.getElementById('garage-modal-est-visible');
+                if (estVisibleSelect) estVisibleSelect.value = this.dataset.visible === '1' ? '1' : '0';
+
+
+                if(garageModalVisibilityField) garageModalVisibilityField.style.display = 'block';
+                showGarageModal();
+            });
+        });
+
+        document.querySelectorAll('.close-garage-admin-modal').forEach(btn => {
+            btn.addEventListener('click', hideGarageModal);
+        });
+        if(garageModalOverlay) {
+            garageModalOverlay.addEventListener('click', e => {
+                if (e.target === garageModalOverlay) hideGarageModal();
+            });
+        }
+
+
+        // --- INITIALISATION DE LA SECTION VISIBLE ---
         let initialSection = window.location.hash.substring(1) || defaultSectionId;
-        if (!document.getElementById(initialSection)) initialSection = defaultSectionId;
-        switchAdminSection(initialSection);
+        if (!document.getElementById(initialSection)) {
+            initialSection = defaultSectionId;
+        }
+        // Ensure the section exists before trying to switch to it
+        if (document.getElementById(initialSection)) {
+            switchAdminSection(initialSection);
+        } else {
+            switchAdminSection(defaultSectionId); // Fallback to default if hash is invalid
+        }
+
+
+        // Chart.js Example (si besoin)
+        const ctx = document.getElementById('salesChart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+                    datasets: [{
+                        label: 'Ventes Mensuelles',
+                        data: [1200, 1900, 3000, 5000, 2300, 3200],
+                        borderColor: 'var(--accent-primary)',
+                        backgroundColor: 'rgba(255, 221, 3, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, ticks: { color: 'var(--text-secondary)'}, grid: { color: 'var(--border-color)' } },
+                              x: { ticks: { color: 'var(--text-secondary)'}, grid: { color: 'var(--border-color)' } } },
+                    plugins: { legend: { labels: { color: 'var(--text-light)' } } }
+                }
+            });
+        }
     });
     </script>
 </body>
